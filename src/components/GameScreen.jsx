@@ -1,7 +1,8 @@
 import React from 'react';
 import './GameScreen.css';
+import EventModal from './EventModal.jsx';
 
-function GameScreen({ gameState, onNextTurn }) {
+function GameScreen({ gameState, onNextTurn, currentEvent, onEventChoice }) {
   // 数値をフォーマットするヘルパー関数
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(amount);
@@ -9,6 +10,13 @@ function GameScreen({ gameState, onNextTurn }) {
 
   return (
     <div className="game-screen">
+      <EventModal event={currentEvent} onChoice={onEventChoice} />
+      {gameState.gameStatus === 'lost' && (
+        <div className="game-over-message">
+          <h2>ゲームオーバー</h2>
+          <p>資金が尽きました。</p>
+        </div>
+      )}
       <h2>現在の状況</h2>
       <div className="status-grid">
         <div className="status-item">

@@ -44,6 +44,20 @@
     font-size: 1.5em;
 }
 
+.game-over-message {
+    background-color: #ffdddd;
+    border: 1px solid #ff8888;
+    color: #d8000c;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.game-over-message h2 {
+    margin: 0 0 5px 0;
+    border: none;
+}
 
 .game-screen button {
     padding: 12px 25px;
