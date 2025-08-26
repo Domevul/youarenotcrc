@@ -1,6 +1,60 @@
 import React from 'react';
 import './GameScreen.css';
 import EventModal from './EventModal.jsx';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  LinearProgress,
+  Typography,
+} from '@mui/material';
+import {
+  MonetizationOn,
+  Group,
+  Biotech,
+  Campaign,
+  People,
+  TrendingUp,
+  HourglassEmpty,
+  Science,
+  ThumbsUpDown,
+} from '@mui/icons-material';
+
+const StatCard = ({ icon, title, value, footer }) => (
+  <Card variant="outlined">
+    <CardContent>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+        {icon}
+        <Typography variant="h6" component="div" sx={{ ml: 1 }}>
+          {title}
+        </Typography>
+      </Box>
+      <Typography variant="h4" component="p" sx={{ mb: 1 }}>
+        {value}
+      </Typography>
+      {footer}
+    </CardContent>
+  </Card>
+);
+
+const ActionCard = ({ title, icon, children }) => (
+  <Card variant="outlined" sx={{ height: '100%' }}>
+    <CardContent>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        {icon}
+        <Typography variant="h6" component="div" sx={{ ml: 1 }}>
+          {title}
+        </Typography>
+      </Box>
+      <Grid container spacing={1} direction="column">
+        {children}
+      </Grid>
+    </CardContent>
+  </Card>
+);
 
 function GameScreen({ gameState, onAction, currentEvent, onEventChoice }) {
   const formatMoney = (amount) => {
@@ -12,98 +66,158 @@ function GameScreen({ gameState, onAction, currentEvent, onEventChoice }) {
 
   const isActionDisabled = gameState.gameStatus !== 'ongoing';
 
-  return (
-    <div className="game-screen">
-      <EventModal event={currentEvent} onChoice={onEventChoice} />
-
-      {/* Game Over or Win Message */}
-      {(gameState.gameStatus === 'lost' || gameState.gameStatus === 'won') && (
-        <div className="game-over-message">
-          <h2>
+  const getGameStatusAlert = () => {
+    if (gameState.gameStatus === 'lost' || gameState.gameStatus === 'won') {
+      return (
+        <Alert
+          severity={gameState.gameStatus === 'won' ? 'success' : 'error'}
+          sx={{ mb: 3 }}
+        >
+          <Typography variant="h6">
             {gameState.gameStatus === 'won'
               ? 'フェーズ1成功！'
               : 'ゲームオーバー'}
-          </h2>
-          <p>{gameState.currentMessage}</p>
-        </div>
-      )}
+          </Typography>
+          {gameState.currentMessage}
+        </Alert>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <Box className="game-screen" sx={{ p: 3 }}>
+      <EventModal event={currentEvent} onChoice={onEventChoice} />
+
+      {getGameStatusAlert()}
 
       {/* Status Display */}
-      <h2>現在の状況 (ターン: {gameState.turn} / 10)</h2>
-      <div className="status-grid">
-        <div className="status-item">
-          <span className="label">資産</span>
-          <span className="value funds">{formatMoney(gameState.money)}</span>
-        </div>
-        <div className="status-item">
-          <span className="label">評判</span>
-          <span className="value">{gameState.reputation} / 100</span>
-        </div>
-        <div className="status-item">
-          <span className="label">参加者</span>
-          <span className="value">{gameState.participants} 人</span>
-        </div>
-        <div className="status-item">
-          <span className="label">データ収集率</span>
-          <span className="value">{gameState.data} %</span>
-        </div>
-      </div>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          現在の状況 (ターン: {gameState.turn} / 10)
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              icon={<MonetizationOn color="success" />}
+              title="資産"
+              value={formatMoney(gameState.money)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              icon={<ThumbsUpDown color="info" />}
+              title="評判"
+              value={`${gameState.reputation} / 100`}
+              footer={
+                <LinearProgress
+                  variant="determinate"
+                  value={gameState.reputation}
+                  color="info"
+                />
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              icon={<Group color="primary" />}
+              title="参加者"
+              value={`${gameState.participants} 人`}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              icon={<Biotech color="secondary" />}
+              title="データ収集率"
+              value={`${gameState.data} %`}
+              footer={
+                <LinearProgress
+                  variant="determinate"
+                  value={gameState.data}
+                  color="secondary"
+                />
+              }
+            />
+          </Grid>
+        </Grid>
+      </Box>
 
       {/* Message Area */}
-      <div className="message-area">
-        <p>{gameState.currentMessage}</p>
-      </div>
+      {gameState.gameStatus === 'ongoing' && (
+        <Alert severity="info" sx={{ mb: 4 }}>
+          {gameState.currentMessage}
+        </Alert>
+      )}
 
       {/* Action Buttons */}
-      <h2>アクションを選択</h2>
-      <div className="action-grid">
-        <div className="action-category">
-          <h3>広報</h3>
-          <button
-            onClick={() => onAction('STANDARD_PR')}
-            disabled={isActionDisabled}
-          >
-            標準的な広報活動 ($10,000)
-          </button>
-          <button
-            onClick={() => onAction('LARGE_SCALE_PR')}
-            disabled={isActionDisabled}
-          >
-            大規模な広報キャンペーン ($50,000)
-          </button>
-        </div>
-        <div className="action-category">
-          <h3>研究</h3>
-          <button
-            onClick={() => onAction('NORMAL_DATA_COLLECTION')}
-            disabled={isActionDisabled}
-          >
-            通常のデータ収集 ($20,000)
-          </button>
-          <button
-            onClick={() => onAction('ADVANCED_DATA_ANALYSIS')}
-            disabled={isActionDisabled}
-          >
-            高度なデータ解析 ($80,000)
-          </button>
-        </div>
-        <div className="action-category">
-          <h3>チーム</h3>
-          <button
-            onClick={() => onAction('MAINTAIN_STATUS_QUO')}
-            disabled={isActionDisabled}
-          >
-            現状維持 ($0)
-          </button>
-          <button
-            onClick={() => onAction('INVEST_IN_TEAM')}
-            disabled={isActionDisabled}
-          >
-            チームへの投資 ($30,000)
-          </button>
-        </div>
-      </div>
-    </div>
+      <Box>
+        <Typography variant="h4" gutterBottom>
+          アクションを選択
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={4}>
+            <ActionCard title="広報" icon={<Campaign />}>
+              <Button
+                variant="contained"
+                startIcon={<TrendingUp />}
+                onClick={() => onAction('STANDARD_PR')}
+                disabled={isActionDisabled}
+              >
+                標準的な広報活動 ($10,000)
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<TrendingUp />}
+                onClick={() => onAction('LARGE_SCALE_PR')}
+                disabled={isActionDisabled}
+              >
+                大規模な広報キャンペーン ($50,000)
+              </Button>
+            </ActionCard>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <ActionCard title="研究" icon={<Science />}>
+              <Button
+                variant="contained"
+                startIcon={<Biotech />}
+                onClick={() => onAction('NORMAL_DATA_COLLECTION')}
+                disabled={isActionDisabled}
+              >
+                通常のデータ収集 ($20,000)
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<Biotech />}
+                onClick={() => onAction('ADVANCED_DATA_ANALYSIS')}
+                disabled={isActionDisabled}
+              >
+                高度なデータ解析 ($80,000)
+              </Button>
+            </ActionCard>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <ActionCard title="チーム" icon={<People />}>
+              <Button
+                variant="contained"
+                startIcon={<HourglassEmpty />}
+                onClick={() => onAction('MAINTAIN_STATUS_QUO')}
+                disabled={isActionDisabled}
+              >
+                現状維持 ($0)
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<People />}
+                onClick={() => onAction('INVEST_IN_TEAM')}
+                disabled={isActionDisabled}
+              >
+                チームへの投資 ($30,000)
+              </Button>
+            </ActionCard>
+          </Grid>
+        </Grid>
+      </Box>
+    </Box>
   );
 }
 
