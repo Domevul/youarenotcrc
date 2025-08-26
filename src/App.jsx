@@ -4,6 +4,7 @@ import GameScreen from './components/GameScreen.jsx';
 import Footer from './components/Footer.jsx';
 import TitleScreen from './components/TitleScreen.jsx'; // 追加
 import { gameEvents } from './game-events.js';
+import { story } from './game-story.js'; // ストーリーデータをインポート
 import {
   INITIAL_GAME_STATE,
   ACTIONS,
@@ -15,6 +16,28 @@ function App() {
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [view, setView] = useState('title'); // 'title' or 'game'
+
+  // 章のクリアをチェックする副作用
+  useEffect(() => {
+    if (gameState.gameStatus !== 'ongoing') return;
+
+    const currentChapterNumber = gameState.currentChapter;
+    const chapter = story[currentChapterNumber];
+
+    if (chapter && chapter.isCompleted(gameState)) {
+      // 最終章は通常の勝利条件で処理されるため、ここでは何もしない
+      if (currentChapterNumber >= Object.keys(story).length) {
+        return;
+      }
+
+      setGameState((prev) => ({
+        ...prev,
+        currentChapter: prev.currentChapter + 1,
+        currentMessage: chapter.completionMessage,
+      }));
+    }
+  }, [gameState]);
+
 
   // ゲーム開始処理
   const startGame = () => {
@@ -221,6 +244,7 @@ function App() {
           onAction={handleAction}
           currentEvent={currentEvent}
           onEventChoice={handleEventChoice}
+          currentChapter={story[gameState.currentChapter]}
         />
       </main>
       <Footer />

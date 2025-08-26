@@ -12,6 +12,7 @@ export const INITIAL_GAME_STATE = {
   data: 0, // データ収集率
   gameStatus: 'ongoing', // 'ongoing', 'event', 'won', 'lost'
   currentMessage: 'プロジェクトを開始します。最初のアクションを選択してください。', // プレイヤーへのメッセージ
+  currentChapter: 1, // 現在の章
   // イベント効果を管理するための追加ステート
   stopTurns: 0, // 治験が停止しているターン数
   reputationGainLater: null, // { turns: number, amount: number }
