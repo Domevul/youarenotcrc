@@ -1,11 +1,19 @@
 import React from 'react';
+import SettingsMenu from './SettingsMenu.jsx';
 import './Header.css';
 
-function Header({ drugName, turn }) {
+function Header({ drugName, turn, onRestart, onReturnToTitle, onSave }) {
   return (
     <header className="app-header">
-      <h1>{drugName} - 治験シミュレーション</h1>
-      <div className="turn-counter">Turn: {turn}</div>
+      <div className="header-title">
+        <h1>{drugName} - 治験シミュレーション</h1>
+        <div className="turn-counter">Turn: {turn}</div>
+      </div>
+      <SettingsMenu
+        onRestart={onRestart}
+        onReturnToTitle={onReturnToTitle}
+        onSave={onSave}
+      />
     </header>
   );
 }
