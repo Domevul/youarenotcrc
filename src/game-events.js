@@ -6,20 +6,19 @@ export const gameEvents = {
   // 固定イベント (Turn 5)
   FIXED_EVENT_TURN_5: {
     id: 'E_FIXED_01',
+    character: '山本 紗季',
     title: '最初の報告',
     description:
-      '参加者から軽微だが未予測の副作用（継続的な頭痛など）が報告された。どう対応しますか？',
+      '「木島君、少し耳に入れておきたい情報があるわ」\n参加者の一人から、継続的な頭痛という、予測されていなかった副作用の報告が上がってきた。軽微ではあるが、どう対応する？',
     choices: [
       {
         id: 'C01a',
         text: '即時公表し、治験を一時中断',
         description:
-          '2ターンの間、アクションが実行できなくなる。短期的には評判が下がるが、最終的には誠実な対応として評価される。',
+          '「すぐに公表し、原因が特定できるまで治験は中断だ」\n誠実な対応は、長期的には信頼に繋がるはずだ。',
         effects: {
           money: -50000,
           reputation: -10, // 即時低下
-          // +15は2ターン後に発生させる必要がある
-          // 2ターン停止はgameStateで管理
           stopTurns: 2,
           reputationGainLater: {
             turns: 2,
@@ -31,9 +30,8 @@ export const gameEvents = {
         id: 'C01b',
         text: '経過観察とし、治験を継続',
         description:
-          '進行は止まらないが、50%の確率で後に重大イベントが発生し、評判が-30される可能性がある。',
+          '「もう少し様子を見よう。すぐに大きな問題になるとは考えにくい」\nリスクはあるが、プロジェクトの遅延は避けたい。',
         effects: {
-          // 50%の確率はApp.jsxで処理
           potentialRisk: {
             chance: 0.5,
             reputation: -30,
@@ -44,9 +42,8 @@ export const gameEvents = {
         id: 'C01c',
         text: '報告を隠蔽する',
         description:
-          '短期的な影響はないが、発覚した場合はゲームオーバー級のペナルティ。',
+          '「…この件は、一旦我々の胸に収めておこう」\n最もリスクの高い選択肢。しかし、成功のためには時に決断が必要だ。',
         effects: {
-          // 隠蔽リスクはApp.jsxでフラグ管理
           hideReport: true,
         },
       },
@@ -55,58 +52,67 @@ export const gameEvents = {
   // --- Action-specific Random Events ---
   RANDOM_TEAM_MORALE_DROP: {
     id: 'E_RANDOM_03',
+    character: 'チームメンバー',
     title: 'チームの士気低下',
     description:
-      '現状維持が続いたことで、チームの士気が少し低下したようだ。研究の効率がわずかに落ちるかもしれない。',
+      '研究室の空気が少し重い。「最近、少し停滞気味じゃないか…？」という声が聞こえてきた。現状維持が続いたことで、チームの士気が低下しているようだ。',
     choices: [
       {
         id: 'CR03a',
         text: '気合を入れ直す',
-        effects: { reputation: -2 }, // Acknowledging the issue has a small cost
+        description: '「皆、もう一度目標を確認しよう！」',
+        effects: { reputation: -2 },
       },
     ],
   },
   RANDOM_SECONDARY_DATA: {
     id: 'E_RANDOM_04',
+    character: '研究員',
     title: '副次データの発見',
     description:
-      '高度なデータ解析の過程で、予期せぬ副次的なデータが見つかった。これは新薬の別の可能性を示唆しているかもしれない。',
+      '「リーダー！すごいものが見つかりました！」\n高度なデータ解析の過程で、FMA-214が持つ別の薬効を示唆するデータが偶然発見された。',
     choices: [
       {
         id: 'CR04a',
         text: '素晴らしい！',
-        effects: { reputation: 5 }, // A positive discovery boosts reputation
+        description: '「これは大きな発見だ！すぐに記録しておいてくれ」',
+        effects: { reputation: 5 },
       },
     ],
   },
   // ランダムイベントの例
   RANDOM_RIVAL_NEWS: {
     id: 'E_RANDOM_01',
+    character: 'ニュース速報',
     title: 'ライバルの影',
     description:
-      '競合のヘリオス製薬が、同様のプロジェクトで大きな進捗を遂げたとニュースになっている。我々の評判が相対的に少し下がり、プレッシャーを感じる。',
+      'スマホが震える。ニュースアプリの通知だ。『ヘリオス製薬、画期的新薬で臨床試験開始』…我々のFMA-214と同じ領域の薬だ。プレッシャーがかかる。',
     choices: [
       {
         id: 'CR01a',
-        text: '内容を確認する',
+        text: '内容を詳しく確認する',
+        description: '先を越された…？いや、まだだ。',
         effects: { reputation: -5 },
       },
     ],
   },
   RANDOM_MEDIA_INTEREST: {
     id: 'E_RANDOM_02',
+    character: '医療ジャーナリスト',
     title: 'メディアの注目',
     description:
-      'あなたのプロジェクトが、ある医療ジャーナリストの目に留まった。情報提供の見返りに、評判を上げるチャンスかもしれない。',
+      '一本の電話が鳴る。「もしもし、月刊メディカル・トゥデイの者ですが、FMA-214について少しお話を伺えませんか？」 プロジェクトが外部の注目を集め始めたようだ。',
     choices: [
       {
         id: 'CR02a',
         text: '限定的な情報を提供する',
+        description: 'うまく利用すれば、評判を高めるチャンスになるかもしれない。',
         effects: { reputation: 10, money: -5000 },
       },
       {
         id: 'CR02b',
-        text: '関わらない',
+        text: '今はまだ、と断る',
+        description: '下手に情報を出すべき時ではない。',
         effects: {},
       },
     ],

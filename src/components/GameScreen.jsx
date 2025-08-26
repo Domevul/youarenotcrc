@@ -40,15 +40,18 @@ const StatCard = ({ icon, title, value, footer }) => (
   </Card>
 );
 
-const ActionCard = ({ title, icon, children }) => (
+const ActionCard = ({ title, icon, description, children }) => (
   <Card variant="outlined" sx={{ height: '100%' }}>
     <CardContent>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
         {icon}
         <Typography variant="h6" component="div" sx={{ ml: 1 }}>
           {title}
         </Typography>
       </Box>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        {description}
+      </Typography>
       <Grid container spacing={1} direction="column">
         {children}
       </Grid>
@@ -174,7 +177,11 @@ function GameScreen({
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
-            <ActionCard title="広報" icon={<Campaign />}>
+            <ActionCard
+              title="広報"
+              icon={<Campaign />}
+              description="治験への参加者を募集し、プロジェクトの認知度を高めます。参加者が増えるほど、データ収集の母数が増えます。"
+            >
               <Button
                 variant="contained"
                 startIcon={<TrendingUp />}
@@ -194,7 +201,11 @@ function GameScreen({
             </ActionCard>
           </Grid>
           <Grid item xs={12} md={4}>
-            <ActionCard title="研究" icon={<Science />}>
+            <ActionCard
+              title="研究"
+              icon={<Science />}
+              description="集まった参加者からデータを収集・解析し、治験の進捗率を高めます。これがプロジェクトの主目的です。"
+            >
               <Button
                 variant="contained"
                 startIcon={<Biotech />}
@@ -214,7 +225,11 @@ function GameScreen({
             </ActionCard>
           </Grid>
           <Grid item xs={12} md={4}>
-            <ActionCard title="チーム" icon={<People />}>
+            <ActionCard
+              title="チーム"
+              icon={<People />}
+              description="研究チームの環境を整え、士気を高めます。チームの状態は、研究の効率に影響を与えます。"
+            >
               <Button
                 variant="contained"
                 startIcon={<HourglassEmpty />}
