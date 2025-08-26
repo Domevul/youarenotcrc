@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header.jsx';
 import GameScreen from './components/GameScreen.jsx';
 import Footer from './components/Footer.jsx';
-import TitleScreen from './components/TitleScreen.jsx'; // 追加
+import TitleScreen from './components/TitleScreen.jsx';
+import StoryDialog from './components/StoryDialog.jsx';
+import { prologue } from './game-prologue.js';
 import { gameEvents } from './game-events.js';
 import { story } from './game-story.js'; // ストーリーデータをインポート
 import {
@@ -15,7 +17,7 @@ import './App.css';
 function App() {
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
   const [currentEvent, setCurrentEvent] = useState(null);
-  const [view, setView] = useState('title'); // 'title' or 'game'
+  const [gamePhase, setGamePhase] = useState('title'); // 'title', 'prologue', 'game'
 
   // 章のクリアをチェックする副作用
   useEffect(() => {
@@ -39,21 +41,26 @@ function App() {
   }, [gameState]);
 
 
-  // ゲーム開始処理
+  // --- ゲームフェーズ管理 ---
   const startGame = () => {
     setGameState(INITIAL_GAME_STATE);
     setCurrentEvent(null);
-    setView('game');
+    setGamePhase('prologue');
+  };
+
+  const handlePrologueComplete = () => {
+    setGamePhase('game');
   };
 
   // --- 設定メニュー用の関数 ---
   const handleRestart = () => {
-    // ゲームを初期状態に戻して開始
-    startGame();
+    setGameState(INITIAL_GAME_STATE);
+    setCurrentEvent(null);
+    setGamePhase('game');
   };
 
   const handleReturnToTitle = () => {
-    setView('title');
+    setGamePhase('title');
   };
 
   const handleSave = () => {
@@ -225,8 +232,14 @@ function App() {
     }
   };
 
-  if (view === 'title') {
+  if (gamePhase === 'title') {
     return <TitleScreen onStartGame={startGame} />;
+  }
+
+  if (gamePhase === 'prologue') {
+    return (
+      <StoryDialog scenes={prologue} onComplete={handlePrologueComplete} />
+    );
   }
 
   return (
