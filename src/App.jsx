@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header.jsx';
 import GameScreen from './components/GameScreen.jsx';
 import Footer from './components/Footer.jsx';
+import TitleScreen from './components/TitleScreen.jsx'; // 追加
 import { gameEvents } from './game-events.js';
 import {
   INITIAL_GAME_STATE,
@@ -13,6 +14,14 @@ import './App.css';
 function App() {
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
   const [currentEvent, setCurrentEvent] = useState(null);
+  const [view, setView] = useState('title'); // 'title' or 'game'
+
+  // ゲーム開始処理
+  const startGame = () => {
+    setGameState(INITIAL_GAME_STATE);
+    setCurrentEvent(null);
+    setView('game');
+  };
 
   const triggerEvent = (turn) => {
     // Turn 5 Fixed Event
@@ -176,6 +185,10 @@ function App() {
       triggerEvent(newTurn);
     }
   };
+
+  if (view === 'title') {
+    return <TitleScreen onStartGame={startGame} />;
+  }
 
   return (
     <div className="App">
