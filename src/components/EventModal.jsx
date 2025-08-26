@@ -13,11 +13,9 @@ function EventModal({ event, onChoice }) {
         <h2>{event.title}</h2>
         <p className="event-description">{event.description}</p>
         <div className="modal-choices">
-          {event.choices.map(choice => (
+          {event.choices.map((choice) => (
             <div key={choice.id} className="choice-item">
-              <button onClick={() => onChoice(choice)}>
-                {choice.text}
-              </button>
+              <button onClick={() => onChoice(choice)}>{choice.text}</button>
               <p className="choice-description">{choice.description}</p>
             </div>
           ))}

@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import Header from './components/Header.jsx'
-import GameScreen from './components/GameScreen.jsx'
-import Footer from './components/Footer.jsx'
-import { gameEvents } from './game-events.js'
-import './App.css'
+import React, { useState } from 'react';
+import Header from './components/Header.jsx';
+import GameScreen from './components/GameScreen.jsx';
+import Footer from './components/Footer.jsx';
+import { gameEvents } from './game-events.js';
+import './App.css';
 
 // ゲームのバランスを定義する定数
 const GAME_SETTINGS = {
@@ -31,7 +31,7 @@ function App() {
 
   const handleEventChoice = (choice) => {
     const effects = choice.effects;
-    setGameState(prevState => ({
+    setGameState((prevState) => ({
       ...prevState,
       funds: prevState.funds + (effects.funds || 0),
       efficacy: Math.min(100, prevState.efficacy + (effects.efficacy || 0)),
@@ -47,17 +47,24 @@ function App() {
 
     // イベント発生判定
     if (Math.random() < GAME_SETTINGS.EVENT_CHANCE_PER_TURN) {
-      const randomEvent = gameEvents[Math.floor(Math.random() * gameEvents.length)];
+      const randomEvent =
+        gameEvents[Math.floor(Math.random() * gameEvents.length)];
       setCurrentEvent(randomEvent);
-      setGameState(prevState => ({ ...prevState, gameStatus: 'event' }));
+      setGameState((prevState) => ({ ...prevState, gameStatus: 'event' }));
       return; // イベント中はターン進行を止める
     }
 
-    setGameState(prevState => {
+    setGameState((prevState) => {
       const newFunds = prevState.funds - GAME_SETTINGS.COST_PER_TURN;
-      const maxParticipants = GAME_SETTINGS.MAX_PARTICIPANTS_PER_PHASE[prevState.phase];
-      const newParticipants = Math.min(maxParticipants, prevState.participants + GAME_SETTINGS.PARTICIPANTS_PER_TURN);
-      const efficacyGain = GAME_SETTINGS.EFFICACY_GAIN_PER_TURN + (newParticipants / maxParticipants) * 0.5;
+      const maxParticipants =
+        GAME_SETTINGS.MAX_PARTICIPANTS_PER_PHASE[prevState.phase];
+      const newParticipants = Math.min(
+        maxParticipants,
+        prevState.participants + GAME_SETTINGS.PARTICIPANTS_PER_TURN
+      );
+      const efficacyGain =
+        GAME_SETTINGS.EFFICACY_GAIN_PER_TURN +
+        (newParticipants / maxParticipants) * 0.5;
       const newEfficacy = Math.min(100, prevState.efficacy + efficacyGain);
       const safetyDrop = Math.random() * GAME_SETTINGS.SAFETY_RISK_PER_TURN;
       const newSafety = Math.max(0, prevState.safety - safetyDrop);
@@ -92,7 +99,7 @@ function App() {
       </main>
       <Footer />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

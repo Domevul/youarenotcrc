@@ -12,14 +12,14 @@
 2.  **ウェブアプリの登録**: プロジェクトにウェブアプリを登録し、`firebaseConfig`オブジェクト（APIキーなどを含む）を取得します。
 3.  **機密情報の設定**:
     - **ローカル開発環境**:
-        1.  リポジトリのルートに`.env`というファイルを作成します。
-        2.  `.env`ファイルに、Firebaseから取得した設定値を`VITE_`プレフィックスを付けて記述します。（例: `VITE_API_KEY="your-api-key"`）
-        3.  `src/firebase/firebase.js`を修正し、`import.meta.env.VITE_API_KEY`のように環境変数から値を読み込むように変更します。
-        4.  `.gitignore`ファイルに`.env`を追加して、機密情報がリポジトリにコミットされないようにします。
+      1.  リポジトリのルートに`.env`というファイルを作成します。
+      2.  `.env`ファイルに、Firebaseから取得した設定値を`VITE_`プレフィックスを付けて記述します。（例: `VITE_API_KEY="your-api-key"`）
+      3.  `src/firebase/firebase.js`を修正し、`import.meta.env.VITE_API_KEY`のように環境変数から値を読み込むように変更します。
+      4.  `.gitignore`ファイルに`.env`を追加して、機密情報がリポジトリにコミットされないようにします。
     - **GitHub Actions（本番環境）**:
-        1.  リポジトリの`Settings` > `Secrets and variables` > `Actions`に移動します。
-        2.  `New repository secret`をクリックし、ローカルの`.env`ファイルと同じキーと値（例: `VITE_API_KEY`）を登録します。
-        3.  `.github/workflows/deploy.yml`を修正し、ビルドステップでこれらのシークレットを環境変数として渡すように設定します。
+      1.  リポジトリの`Settings` > `Secrets and variables` > `Actions`に移動します。
+      2.  `New repository secret`をクリックし、ローカルの`.env`ファイルと同じキーと値（例: `VITE_API_KEY`）を登録します。
+      3.  `.github/workflows/deploy.yml`を修正し、ビルドステップでこれらのシークレットを環境変数として渡すように設定します。
 
 ## 2. 初回デプロイの手順
 
