@@ -56,7 +56,13 @@ const ActionCard = ({ title, icon, children }) => (
   </Card>
 );
 
-function GameScreen({ gameState, onAction, currentEvent, onEventChoice }) {
+function GameScreen({
+  gameState,
+  onAction,
+  currentEvent,
+  onEventChoice,
+  currentChapter,
+}) {
   const formatMoney = (amount) => {
     return new Intl.NumberFormat('ja-JP', {
       style: 'currency',
@@ -90,6 +96,18 @@ function GameScreen({ gameState, onAction, currentEvent, onEventChoice }) {
       <EventModal event={currentEvent} onChoice={onEventChoice} />
 
       {getGameStatusAlert()}
+
+      {/* Chapter Goal Display */}
+      {currentChapter && gameState.gameStatus === 'ongoing' && (
+        <Card sx={{ mb: 3, backgroundColor: 'primary.light' }}>
+          <CardContent>
+            <Typography variant="h5" component="div" gutterBottom>
+              {currentChapter.title}
+            </Typography>
+            <Typography variant="body1">{currentChapter.goalText}</Typography>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Status Display */}
       <Box sx={{ mb: 4 }}>
