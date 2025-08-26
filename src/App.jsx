@@ -23,6 +23,22 @@ function App() {
     setView('game');
   };
 
+  // --- 設定メニュー用の関数 ---
+  const handleRestart = () => {
+    // ゲームを初期状態に戻して開始
+    startGame();
+  };
+
+  const handleReturnToTitle = () => {
+    setView('title');
+  };
+
+  const handleSave = () => {
+    // TODO: 今後の開発でFirebaseに保存する機能を実装
+    console.log('Game state saved (not really):', gameState);
+    alert('セーブ機能は現在開発中です。');
+  };
+
   const triggerEvent = (turn) => {
     // Turn 5 Fixed Event
     if (turn === 5) {
@@ -192,7 +208,13 @@ function App() {
 
   return (
     <div className="App">
-      <Header drugName="FMA-214" turn={gameState.turn} />
+      <Header
+        drugName="FMA-214"
+        turn={gameState.turn}
+        onRestart={handleRestart}
+        onReturnToTitle={handleReturnToTitle}
+        onSave={handleSave}
+      />
       <main>
         <GameScreen
           gameState={gameState}
