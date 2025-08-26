@@ -5,7 +5,10 @@ import EventModal from './EventModal.jsx';
 function GameScreen({ gameState, onNextTurn, currentEvent, onEventChoice }) {
   // 数値をフォーマットするヘルパー関数
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(amount);
+    return new Intl.NumberFormat('ja-JP', {
+      style: 'currency',
+      currency: 'JPY',
+    }).format(amount);
   };
 
   return (
@@ -44,7 +47,10 @@ function GameScreen({ gameState, onNextTurn, currentEvent, onEventChoice }) {
           <span className="value">{gameState.ethics}</span>
         </div>
       </div>
-      <button onClick={onNextTurn} disabled={gameState.gameStatus !== 'ongoing'}>
+      <button
+        onClick={onNextTurn}
+        disabled={gameState.gameStatus !== 'ongoing'}
+      >
         次のターンへ
       </button>
     </div>

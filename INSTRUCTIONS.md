@@ -13,16 +13,20 @@ This is a browser-based simulation game where you manage a clinical trial for a 
 ### Installation & Setup
 
 1.  **Clone the repository:**
+
     ```bash
     git clone https://github.com/your-username/clinical-trial-sim.git
     cd clinical-trial-sim
     ```
 
 2.  **Install dependencies:**
+
     ```bash
     npm install
     ```
+
     or
+
     ```bash
     yarn install
     ```
@@ -59,11 +63,13 @@ This will create a `dist` folder in the project root, which contains the optimiz
 To deploy the application to Firebase Hosting, you'll need the Firebase CLI.
 
 1.  **Install Firebase CLI:**
+
     ```bash
     npm install -g firebase-tools
     ```
 
 2.  **Login to Firebase:**
+
     ```bash
     firebase login
     ```
