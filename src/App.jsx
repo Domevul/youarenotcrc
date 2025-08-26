@@ -1,98 +1,189 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header.jsx';
 import GameScreen from './components/GameScreen.jsx';
 import Footer from './components/Footer.jsx';
 import { gameEvents } from './game-events.js';
+import {
+  INITIAL_GAME_STATE,
+  ACTIONS,
+  GAME_CONDITIONS,
+} from './game-settings.js';
 import './App.css';
 
-// ゲームのバランスを定義する定数
-const GAME_SETTINGS = {
-  COST_PER_TURN: 50000000,
-  PARTICIPANTS_PER_TURN: 5,
-  MAX_PARTICIPANTS_PER_PHASE: { 1: 50, 2: 200, 3: 1000 },
-  EFFICACY_GAIN_PER_TURN: 0.1,
-  SAFETY_RISK_PER_TURN: 0.5,
-  EVENT_CHANCE_PER_TURN: 0.4, // 1ターンにイベントが発生する確率
-};
-
 function App() {
-  const [gameState, setGameState] = useState({
-    funds: 1000000000,
-    phase: 1,
-    turn: 1,
-    participants: 0,
-    efficacy: 0,
-    safety: 100,
-    ethics: 100,
-    drugName: '画期的新薬A',
-    gameStatus: 'ongoing', // 'ongoing', 'event', 'won', 'lost'
-  });
+  const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
   const [currentEvent, setCurrentEvent] = useState(null);
+
+  const triggerEvent = (turn) => {
+    // Turn 5 Fixed Event
+    if (turn === 5) {
+      setCurrentEvent(gameEvents.FIXED_EVENT_TURN_5);
+      setGameState((prev) => ({ ...prev, gameStatus: 'event' }));
+      return true;
+    }
+    // Random Event Logic (e.g., 25% chance)
+    if (Math.random() < 0.25) {
+      const randomEvents = [
+        gameEvents.RANDOM_RIVAL_NEWS,
+        gameEvents.RANDOM_MEDIA_INTEREST,
+      ];
+      const event = randomEvents[Math.floor(Math.random() * randomEvents.length)];
+      setCurrentEvent(event);
+      setGameState((prev) => ({ ...prev, gameStatus: 'event' }));
+      return true;
+    }
+    return false;
+  };
 
   const handleEventChoice = (choice) => {
     const effects = choice.effects;
-    setGameState((prevState) => ({
-      ...prevState,
-      funds: prevState.funds + (effects.funds || 0),
-      efficacy: Math.min(100, prevState.efficacy + (effects.efficacy || 0)),
-      safety: Math.max(0, prevState.safety + (effects.safety || 0)),
-      ethics: Math.max(0, prevState.ethics + (effects.ethics || 0)),
-      gameStatus: 'ongoing', // イベントが終了し、ゲーム再開
-    }));
+    let newState = { ...gameState };
+
+    // Apply immediate effects
+    newState.money = (newState.money || 0) + (effects.money || 0);
+    newState.reputation = (newState.reputation || 0) + (effects.reputation || 0);
+
+    // Handle special effects
+    if (effects.stopTurns) {
+      newState.stopTurns = effects.stopTurns;
+    }
+    if (effects.reputationGainLater) {
+      newState.reputationGainLater = effects.reputationGainLater;
+    }
+    if (effects.potentialRisk) {
+      newState.potentialRisk = effects.potentialRisk;
+    }
+    if (effects.hideReport) {
+      newState.hiddenReport = true;
+    }
+
+    newState.gameStatus = 'ongoing';
+    newState.currentMessage =
+      'イベントの結果を反映し、アクションを再開します。';
+    setGameState(newState);
     setCurrentEvent(null);
   };
 
-  const handleNextTurn = () => {
+  const handleAction = (actionType) => {
     if (gameState.gameStatus !== 'ongoing') return;
 
-    // イベント発生判定
-    if (Math.random() < GAME_SETTINGS.EVENT_CHANCE_PER_TURN) {
-      const randomEvent =
-        gameEvents[Math.floor(Math.random() * gameEvents.length)];
-      setCurrentEvent(randomEvent);
-      setGameState((prevState) => ({ ...prevState, gameStatus: 'event' }));
-      return; // イベント中はターン進行を止める
-    }
+    if (gameState.stopTurns > 0) {
+      const newTurn = gameState.turn + 1;
+      const newStopTurns = gameState.stopTurns - 1;
+      let newReputation = gameState.reputation;
+      let newMessage = `治験中断中... 残り${newStopTurns}ターン。`;
 
-    setGameState((prevState) => {
-      const newFunds = prevState.funds - GAME_SETTINGS.COST_PER_TURN;
-      const maxParticipants =
-        GAME_SETTINGS.MAX_PARTICIPANTS_PER_PHASE[prevState.phase];
-      const newParticipants = Math.min(
-        maxParticipants,
-        prevState.participants + GAME_SETTINGS.PARTICIPANTS_PER_TURN
-      );
-      const efficacyGain =
-        GAME_SETTINGS.EFFICACY_GAIN_PER_TURN +
-        (newParticipants / maxParticipants) * 0.5;
-      const newEfficacy = Math.min(100, prevState.efficacy + efficacyGain);
-      const safetyDrop = Math.random() * GAME_SETTINGS.SAFETY_RISK_PER_TURN;
-      const newSafety = Math.max(0, prevState.safety - safetyDrop);
-
-      let newGameStatus = prevState.gameStatus;
-      if (newFunds <= 0) {
-        newGameStatus = 'lost';
+      // Apply delayed reputation gain
+      if (
+        gameState.reputationGainLater &&
+        gameState.reputationGainLater.turns === newStopTurns + 1
+      ) {
+        newReputation += gameState.reputationGainLater.amount;
+        newMessage += '誠実な対応が評価され、評判が回復した！';
       }
 
-      return {
-        ...prevState,
-        turn: prevState.turn + 1,
-        funds: newFunds,
-        participants: newParticipants,
-        efficacy: parseFloat(newEfficacy.toFixed(2)),
-        safety: parseFloat(newSafety.toFixed(2)),
-        gameStatus: newGameStatus,
-      };
+      setGameState({
+        ...gameState,
+        turn: newTurn,
+        stopTurns: newStopTurns,
+        reputation: newReputation,
+        currentMessage: newMessage,
+      });
+      return;
+    }
+
+    const action = ACTIONS[actionType];
+    if (!action || gameState.money < action.cost) {
+      setGameState((prev) => ({
+        ...prev,
+        currentMessage: '資金が不足しています。',
+      }));
+      return;
+    }
+
+    // --- Action Execution ---
+    const effects = action.effect(gameState.reputation);
+    let newMoney = gameState.money - action.cost + (effects.money || 0);
+    let newParticipants = gameState.participants + (effects.participants || 0);
+    // Apply bonus data and reset it
+    let newData =
+      gameState.data + (effects.data || 0) + gameState.dataCollectionBonus;
+    let newReputation = gameState.reputation + (effects.reputation || 0);
+    const newTurn = gameState.turn + 1;
+    let newMessage = action.message;
+    let newBonus = 0; // Reset bonus by default
+
+    // Handle special action logic
+    if (actionType === 'INVEST_IN_TEAM') {
+      newBonus = 2; // Set bonus for the *next* turn
+      newMessage += ' 次のターンのデータ収集率が2%アップします。';
+    }
+
+    // --- Post-Action Checks & State Updates ---
+    let eventTriggered = false;
+    // Check for action-specific events
+    if (actionType === 'MAINTAIN_STATUS_QUO' && Math.random() < 0.2) {
+      setCurrentEvent(gameEvents.RANDOM_TEAM_MORALE_DROP);
+      setGameState((prev) => ({ ...prev, gameStatus: 'event' }));
+      eventTriggered = true;
+    }
+    if (actionType === 'ADVANCED_DATA_ANALYSIS' && Math.random() < 0.15) {
+      setCurrentEvent(gameEvents.RANDOM_SECONDARY_DATA);
+      setGameState((prev) => ({ ...prev, gameStatus: 'event' }));
+      eventTriggered = true;
+    }
+
+    // --- Post-Action Checks & State Updates ---
+    // Check for potential risk materializing
+    if (gameState.potentialRisk && Math.random() < gameState.potentialRisk.chance) {
+      newReputation += gameState.potentialRisk.reputation;
+      newMessage += '経過観察にしていた問題が悪化し、評判が大きく下がった！';
+      gameState.potentialRisk = null; // Risk materializes only once
+    }
+    // Check for hidden report discovery (e.g., 10% chance each turn)
+    if (gameState.hiddenReport && Math.random() < 0.1) {
+      setGameState({ ...gameState, gameStatus: 'lost', currentMessage: "隠蔽が発覚した！プロジェクトは強制終了だ！" });
+      return;
+    }
+
+    // --- Win/Loss Condition Check ---
+    let newGameStatus = 'ongoing';
+    if (newData >= GAME_CONDITIONS.WIN_DATA_PERCENTAGE) {
+      newGameStatus = 'won';
+      newMessage = 'データ収集率が100%に到達！フェーズ1臨床試験は成功です！';
+    } else if (newMoney < GAME_CONDITIONS.LOSE_MONEY_THRESHOLD) {
+      newGameStatus = 'lost';
+      newMessage = '資産が底をつきました... プロジェクトは失敗です。';
+    } else if (newTurn > GAME_CONDITIONS.MAX_TURNS) {
+      newGameStatus = 'lost';
+      newMessage = '規定ターン数を超えました... プロジェクトは失敗です。';
+    }
+
+    setGameState({
+      ...gameState,
+      money: newMoney,
+      participants: newParticipants,
+      data: Math.min(100, newData),
+      reputation: Math.max(0, Math.min(100, newReputation)),
+      turn: newTurn,
+      gameStatus: newGameStatus,
+      currentMessage: newMessage,
+      dataCollectionBonus: newBonus, // Set the bonus for the next turn
     });
+
+    // Trigger event for the *next* turn if the game is still ongoing and no other event was triggered
+    if (newGameStatus === 'ongoing' && !eventTriggered) {
+      triggerEvent(newTurn);
+    }
   };
 
   return (
     <div className="App">
-      <Header drugName={gameState.drugName} turn={gameState.turn} />
+      <Header drugName="FMA-214" turn={gameState.turn} />
       <main>
         <GameScreen
           gameState={gameState}
-          onNextTurn={handleNextTurn}
+          onAction={handleAction}
           currentEvent={currentEvent}
           onEventChoice={handleEventChoice}
         />

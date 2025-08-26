@@ -1,67 +1,114 @@
-export const gameEvents = [
-  {
-    id: 'E001',
-    title: '予期せぬ副作用',
+/**
+ * イベントデータを定義します。
+ * SCENE1_SPEC.md に基づいています。
+ */
+export const gameEvents = {
+  // 固定イベント (Turn 5)
+  FIXED_EVENT_TURN_5: {
+    id: 'E_FIXED_01',
+    title: '最初の報告',
     description:
-      '治験参加者の数名から、予測されていなかった軽微な副作用の報告があった。この事実を公表しますか？',
+      '参加者から軽微だが未予測の副作用（継続的な頭痛など）が報告された。どう対応しますか？',
     choices: [
       {
-        id: 'C001a',
-        text: '直ちに公表する',
+        id: 'C01a',
+        text: '即時公表し、治験を一時中断',
         description:
-          '追加の検査費用が発生し、薬の安全性評価は少し下がるが、高い倫理性が評価される。',
-        effects: { funds: -50000000, ethics: 5, safety: -2 },
+          '2ターンの間、アクションが実行できなくなる。短期的には評判が下がるが、最終的には誠実な対応として評価される。',
+        effects: {
+          money: -50000,
+          reputation: -10, // 即時低下
+          // +15は2ターン後に発生させる必要がある
+          // 2ターン停止はgameStateで管理
+          stopTurns: 2,
+          reputationGainLater: {
+            turns: 2,
+            amount: 25, // -10から+15になるので、差分は+25
+          },
+        },
       },
       {
-        id: 'C001b',
-        text: 'しばらく様子を見る',
+        id: 'C01b',
+        text: '経過観察とし、治験を継続',
         description:
-          '短期的なコストはかからないが、問題が発覚した場合、倫理と安全性の評価が大きく損なわれるリスクがある。',
-        effects: { ethics: -10, safety: -5 },
+          '進行は止まらないが、50%の確率で後に重大イベントが発生し、評判が-30される可能性がある。',
+        effects: {
+          // 50%の確率はApp.jsxで処理
+          potentialRisk: {
+            chance: 0.5,
+            reputation: -30,
+          },
+        },
+      },
+      {
+        id: 'C01c',
+        text: '報告を隠蔽する',
+        description:
+          '短期的な影響はないが、発覚した場合はゲームオーバー級のペナルティ。',
+        effects: {
+          // 隠蔽リスクはApp.jsxでフラグ管理
+          hideReport: true,
+        },
       },
     ],
   },
-  {
-    id: 'E002',
-    title: 'メディアからの取材依頼',
+  // --- Action-specific Random Events ---
+  RANDOM_TEAM_MORALE_DROP: {
+    id: 'E_RANDOM_03',
+    title: 'チームの士気低下',
     description:
-      'あなたの画期的な新薬について、大手メディアから取材の申し込みがあった。治験の進捗を大々的にアピールするチャンスだが、期待を煽りすぎるリスクもある。',
+      '現状維持が続いたことで、チームの士気が少し低下したようだ。研究の効率がわずかに落ちるかもしれない。',
     choices: [
       {
-        id: 'C002a',
-        text: '積極的に協力する',
-        description:
-          'メディアへの露出により、投資家からの期待が高まり、追加資金を得られる。しかし、少し大げさに話す必要があるかもしれない。',
-        effects: { funds: 100000000, ethics: -5 },
-      },
-      {
-        id: 'C002b',
-        text: '慎重に断る',
-        description:
-          '誠実な対応として倫理評価は上がるが、資金調達の機会を逃すことになる。',
-        effects: { funds: 0, ethics: 5 },
+        id: 'CR03a',
+        text: '気合を入れ直す',
+        effects: { reputation: -2 }, // Acknowledging the issue has a small cost
       },
     ],
   },
-  {
-    id: 'E003',
-    title: '研究員の画期的な発見',
+  RANDOM_SECONDARY_DATA: {
+    id: 'E_RANDOM_04',
+    title: '副次データの発見',
     description:
-      'チームの研究員が、薬の効果をわずかに高める新しい投与方法を発見した。すぐさま臨床試験に反映させるか？',
+      '高度なデータ解析の過程で、予期せぬ副次的なデータが見つかった。これは新薬の別の可能性を示唆しているかもしれない。',
     choices: [
       {
-        id: 'C003a',
-        text: 'すぐに採用する',
-        description:
-          '有効性のデータが少し向上するが、プロトコルの変更にはコストがかかる。',
-        effects: { funds: -30000000, efficacy: 2 },
+        id: 'CR04a',
+        text: '素晴らしい！',
+        effects: { reputation: 5 }, // A positive discovery boosts reputation
+      },
+    ],
+  },
+  // ランダムイベントの例
+  RANDOM_RIVAL_NEWS: {
+    id: 'E_RANDOM_01',
+    title: 'ライバルの影',
+    description:
+      '競合のヘリオス製薬が、同様のプロジェクトで大きな進捗を遂げたとニュースになっている。我々の評判が相対的に少し下がり、プレッシャーを感じる。',
+    choices: [
+      {
+        id: 'CR01a',
+        text: '内容を確認する',
+        effects: { reputation: -5 },
+      },
+    ],
+  },
+  RANDOM_MEDIA_INTEREST: {
+    id: 'E_RANDOM_02',
+    title: 'メディアの注目',
+    description:
+      'あなたのプロジェクトが、ある医療ジャーナリストの目に留まった。情報提供の見返りに、評判を上げるチャンスかもしれない。',
+    choices: [
+      {
+        id: 'CR02a',
+        text: '限定的な情報を提供する',
+        effects: { reputation: 10, money: -5000 },
       },
       {
-        id: 'C003b',
-        text: '今回は見送る',
-        description: 'コストはかからないが、改善の機会を逃す。',
+        id: 'CR02b',
+        text: '関わらない',
         effects: {},
       },
     ],
   },
-];
+};
