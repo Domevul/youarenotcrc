@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import HealingIcon from '@mui/icons-material/Healing';
 import './YuaCharacter.css';
@@ -15,21 +15,33 @@ const YuaCharacter = ({ health, affection }) => {
   };
 
   const getExpressionImage = (affectionLevel) => {
-    if (affectionLevel >= 50) return '/yua-happy.svg';
-    if (affectionLevel < 0) return '/yua-sad.svg';
-    return '/yua-neutral.svg';
+    const base = import.meta.env.BASE_URL;
+    if (affectionLevel >= 50) return `${base}yua-happy.svg`;
+    if (affectionLevel < 0) return `${base}yua-sad.svg`;
+    return `${base}yua-neutral.svg`;
+  };
+
+  const [imageSrc, setImageSrc] = useState(getExpressionImage(affection));
+
+  useEffect(() => {
+    setImageSrc(getExpressionImage(affection));
+  }, [affection]);
+
+  const handleImageError = () => {
+    const base = import.meta.env.BASE_URL;
+    setImageSrc(`${base}yua-placeholder.svg`);
   };
 
   const heartSize = Math.max(16, 16 + affection / 2);
   const heartColor = getHeartColor(affection);
   const heartClass = affection >= 50 ? 'glowing-heart' : '';
-  const expressionImage = getExpressionImage(affection);
 
   return (
     <div className="yua-character-container">
       <div className="yua-character-name">ユア</div>
       <img
-        src={expressionImage}
+        src={imageSrc}
+        onError={handleImageError}
         className="yua-character-body"
         alt="Yua"
       />
