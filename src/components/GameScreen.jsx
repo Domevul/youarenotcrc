@@ -1,6 +1,7 @@
 import React from 'react';
 import './GameScreen.css';
 import EventModal from './EventModal.jsx';
+import YuaCharacter from './YuaCharacter.jsx';
 import {
   Alert,
   Box,
@@ -117,47 +118,59 @@ function GameScreen({
         <Typography variant="h4" gutterBottom>
           現在の状況 (ターン: {gameState.turn} / 10)
         </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              icon={<MonetizationOn color="success" />}
-              title="資産"
-              value={formatMoney(gameState.money)}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              icon={<ThumbsUpDown color="info" />}
-              title="評判"
-              value={`${gameState.reputation} / 100`}
-              footer={
-                <LinearProgress
-                  variant="determinate"
-                  value={gameState.reputation}
-                  color="info"
+        <Grid container spacing={3} alignItems="stretch">
+          {/* Main Stats Area */}
+          <Grid item xs={12} md={8}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <StatCard
+                  icon={<MonetizationOn color="success" />}
+                  title="資産"
+                  value={formatMoney(gameState.money)}
                 />
-              }
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              icon={<Group color="primary" />}
-              title="参加者"
-              value={`${gameState.participants} 人`}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              icon={<Biotech color="secondary" />}
-              title="データ収集率"
-              value={`${gameState.data} %`}
-              footer={
-                <LinearProgress
-                  variant="determinate"
-                  value={gameState.data}
-                  color="secondary"
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <StatCard
+                  icon={<ThumbsUpDown color="info" />}
+                  title="評判"
+                  value={`${gameState.reputation} / 100`}
+                  footer={
+                    <LinearProgress
+                      variant="determinate"
+                      value={gameState.reputation}
+                      color="info"
+                    />
+                  }
                 />
-              }
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <StatCard
+                  icon={<Group color="primary" />}
+                  title="参加者"
+                  value={`${gameState.participants} 人`}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <StatCard
+                  icon={<Biotech color="secondary" />}
+                  title="データ収集率"
+                  value={`${gameState.data} %`}
+                  footer={
+                    <LinearProgress
+                      variant="determinate"
+                      value={gameState.data}
+                      color="secondary"
+                    />
+                  }
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+          {/* Yua's Status Area */}
+          <Grid item xs={12} md={4}>
+            <YuaCharacter
+              health={gameState.yuaHealth}
+              affection={gameState.yuaAffection}
             />
           </Grid>
         </Grid>
