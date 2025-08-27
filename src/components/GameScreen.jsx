@@ -22,6 +22,7 @@ import {
   HourglassEmpty,
   Science,
   ThumbsUpDown,
+  Healing,
 } from '@mui/icons-material';
 
 const StatCard = ({ icon, title, value, footer }) => (
@@ -77,34 +78,13 @@ function GameScreen({
 
   const isActionDisabled = gameState.gameStatus !== 'ongoing';
 
-  const getGameStatusAlert = () => {
-    if (gameState.gameStatus === 'lost' || gameState.gameStatus === 'won') {
-      return (
-        <Alert
-          severity={gameState.gameStatus === 'won' ? 'success' : 'error'}
-          sx={{ mb: 3 }}
-        >
-          <Typography variant="h6">
-            {gameState.gameStatus === 'won'
-              ? 'フェーズ1成功！'
-              : 'ゲームオーバー'}
-          </Typography>
-          {gameState.currentMessage}
-        </Alert>
-      );
-    }
-    return null;
-  };
-
   return (
     <Box className="game-screen" sx={{ p: 3 }}>
       <EventModal event={currentEvent} onChoice={onEventChoice} />
 
-      {getGameStatusAlert()}
-
       {/* Status Display */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="h5" gutterBottom>
           現在の状況 (ターン: {gameState.turn} / 10)
         </Typography>
         <Grid container spacing={3} alignItems="stretch">
@@ -164,18 +144,18 @@ function GameScreen({
 
       {/* Message Area */}
       {gameState.gameStatus === 'ongoing' && (
-        <Alert severity="info" sx={{ mb: 4 }}>
+        <Alert severity="info" sx={{ mb: 2 }}>
           {gameState.currentMessage}
         </Alert>
       )}
 
       {/* Action Buttons */}
       <Box>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h5" gutterBottom>
           アクションを選択
         </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6} lg={4}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={4}>
             <ActionCard
               title="広報"
               icon={<Campaign />}
@@ -199,7 +179,7 @@ function GameScreen({
               </Button>
             </ActionCard>
           </Grid>
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item xs={12} sm={4}>
             <ActionCard
               title="研究"
               icon={<Science />}
@@ -223,11 +203,11 @@ function GameScreen({
               </Button>
             </ActionCard>
           </Grid>
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item xs={12} sm={4}>
             <ActionCard
-              title="チーム"
-              icon={<People />}
-              description="研究チームの環境を整え、士気を高めます。チームの状態は、研究の効率に影響を与えます。"
+              title="患者へのケア"
+              icon={<Healing />}
+              description="患者のケア環境を改善し、体調や精神的な安定を図ります。患者の状態は治験の継続に影響します。"
             >
               <Button
                 variant="contained"
@@ -235,15 +215,15 @@ function GameScreen({
                 onClick={() => onAction('MAINTAIN_STATUS_QUO')}
                 disabled={isActionDisabled}
               >
-                現状維持 ($0)
+                基本的なケア ($0)
               </Button>
               <Button
                 variant="contained"
-                startIcon={<People />}
+                startIcon={<Healing />}
                 onClick={() => onAction('INVEST_IN_TEAM')}
                 disabled={isActionDisabled}
               >
-                チームへの投資 ($30,000)
+                療養環境の改善 ($30,000)
               </Button>
             </ActionCard>
           </Grid>
