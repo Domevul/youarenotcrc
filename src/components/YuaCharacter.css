@@ -13,11 +13,8 @@
 }
 
 .yua-character-body {
-  width: 80px;
+  width: 75px; /* Maintain 1:2 aspect ratio */
   height: 150px;
-  border-radius: 40px 40px 0 0; /* Simple "human" shape */
-  transition: background-color 0.5s ease;
-  border: 2px solid #333;
 }
 
 .yua-character-status {
