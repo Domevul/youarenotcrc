@@ -253,87 +253,90 @@ function GameScreen({
         <Typography variant="h5" gutterBottom>
           アクションを選択
         </Typography>
-        <Grid container spacing={2} alignItems="stretch">
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              md: 'repeat(3, 1fr)',
+            },
+            gap: 2,
+          }}
+        >
           {/* 投与 */}
-          <Grid item xs={12} md={4}>
-            <ActionCard
-              title="投与"
-              icon={<Science />}
-              description="ユアにプロトタイプを投与し、データを収集します。Healthを消費しますが、最も効率的にデータを収集できます。"
+          <ActionCard
+            title="投与"
+            icon={<Science />}
+            description="ユアにプロトタイプを投与し、データを収集します。Healthを消費しますが、最も効率的にデータを収集できます。"
+          >
+            <Button
+              variant="contained"
+              color="warning"
+              startIcon={<Biotech />}
+              onClick={() => onAction('ADMINISTER_STANDARD')}
+              disabled={isActionDisabled}
             >
-              <Button
-                variant="contained"
-                color="warning"
-                startIcon={<Biotech />}
-                onClick={() => onAction('ADMINISTER_STANDARD')}
-                disabled={isActionDisabled}
-              >
-                標準プロトコル投与 ($30,000)
-              </Button>
-              <Button
-                variant="contained"
-                color="error"
-                startIcon={<Biotech />}
-                onClick={() => onAction('ADMINISTER_HIGH_RISK')}
-                disabled={isActionDisabled}
-              >
-                高リスク・高リターン投与 ($50,000)
-              </Button>
-            </ActionCard>
-          </Grid>
+              標準プロトコル投与 ($30,000)
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              startIcon={<Biotech />}
+              onClick={() => onAction('ADMINISTER_HIGH_RISK')}
+              disabled={isActionDisabled}
+            >
+              高リスク・高リターン投与 ($50,000)
+            </Button>
+          </ActionCard>
           {/* ケア */}
-          <Grid item xs={12} md={4}>
-            <ActionCard
-              title="ケア"
-              icon={<Healing />}
-              description="ユアとの関係を築き、心身の状態を安定させます。HealthやAffectionの維持に不可欠です。"
+          <ActionCard
+            title="ケア"
+            icon={<Healing />}
+            description="ユアとの関係を築き、心身の状態を安定させます。HealthやAffectionの維持に不可欠です。"
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<People />}
+              onClick={() => onAction('TALK_TO_YUA')}
+              disabled={isActionDisabled}
             >
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<People />}
-                onClick={() => onAction('TALK_TO_YUA')}
-                disabled={isActionDisabled}
-              >
-                ユアと会話する ($0)
-              </Button>
-              <Button
-                variant="contained"
-                color="success"
-                startIcon={<Healing />}
-                onClick={() => onAction('PROVIDE_PALLIATIVE_CARE')}
-                disabled={isActionDisabled}
-              >
-                緩和ケアを行う ($40,000)
-              </Button>
-            </ActionCard>
-          </Grid>
+              ユアと会話する ($0)
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              startIcon={<Healing />}
+              onClick={() => onAction('PROVIDE_PALLIATIVE_CARE')}
+              disabled={isActionDisabled}
+            >
+              緩和ケアを行う ($40,000)
+            </Button>
+          </ActionCard>
           {/* 研究 */}
-          <Grid item xs={12} md={4}>
-            <ActionCard
-              title="研究"
-              icon={<Campaign />}
-              description="直接的なデータ収集ではなく、投与の効率を高めたり、リスクを低減させたりするための補助的な活動です。"
+          <ActionCard
+            title="研究"
+            icon={<Campaign />}
+            description="直接的なデータ収集ではなく、投与の効率を高めたり、リスクを低減させたりするための補助的な活動です。"
+          >
+            <Button
+              variant="outlined"
+              startIcon={<TrendingUp />}
+              onClick={() => onAction('BASIC_RESEARCH')}
+              disabled={isActionDisabled}
             >
-              <Button
-                variant="outlined"
-                startIcon={<TrendingUp />}
-                onClick={() => onAction('BASIC_RESEARCH')}
-                disabled={isActionDisabled}
-              >
-                基礎研究 ($20,000)
-              </Button>
-              <Button
-                variant="outlined"
-                startIcon={<ThumbsUpDown />}
-                onClick={() => onAction('ANALYZE_SIDE_EFFECTS')}
-                disabled={isActionDisabled}
-              >
-                副作用の分析 ($60,000)
-              </Button>
-            </ActionCard>
-          </Grid>
-        </Grid>
+              基礎研究 ($20,000)
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<ThumbsUpDown />}
+              onClick={() => onAction('ANALYZE_SIDE_EFFECTS')}
+              disabled={isActionDisabled}
+            >
+              副作用の分析 ($60,000)
+            </Button>
+          </ActionCard>
+        </Box>
       </Box>
 
       {/* Mobile Action Panel */}
