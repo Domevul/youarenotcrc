@@ -14,7 +14,7 @@
 
 .modal-content {
   width: 90%;
-  max-width: 600px;
+  max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
   animation: scale-up 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;

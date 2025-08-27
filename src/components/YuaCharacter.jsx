@@ -13,15 +13,22 @@ const YuaCharacter = ({ health, affection }) => {
     return '#64b5f6'; // Cold blue
   };
 
+  const getExpressionImage = (affectionLevel) => {
+    if (affectionLevel >= 50) return '/yua-happy.svg';
+    if (affectionLevel < 0) return '/yua-sad.svg';
+    return '/yua-neutral.svg';
+  };
+
   const heartSize = Math.max(16, 16 + affection / 2);
   const heartColor = getHeartColor(affection);
   const heartClass = affection >= 50 ? 'glowing-heart' : '';
+  const expressionImage = getExpressionImage(affection);
 
   return (
     <div className="yua-character-container">
       <div className="yua-character-name">ユア</div>
       <img
-        src="/yua-placeholder.svg"
+        src={expressionImage}
         className="yua-character-body"
         alt="Yua"
       />
