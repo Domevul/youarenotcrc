@@ -7,8 +7,15 @@ import './YuaCharacter.css';
  * @param {{health: number, affection: number}} props
  */
 const YuaCharacter = ({ health, affection }) => {
-  // Base size + affection value. Min size ensures visibility.
+  const getHeartColor = (affectionLevel) => {
+    if (affectionLevel >= 50) return '#f06292'; // Bright, warm pink
+    if (affectionLevel >= 0) return '#e91e63'; // Standard pink
+    return '#64b5f6'; // Cold blue
+  };
+
   const heartSize = Math.max(16, 16 + affection / 2);
+  const heartColor = getHeartColor(affection);
+  const heartClass = affection >= 50 ? 'glowing-heart' : '';
 
   return (
     <div className="yua-character-container">
@@ -19,7 +26,10 @@ const YuaCharacter = ({ health, affection }) => {
         alt="Yua"
       />
       <div className="yua-character-status">
-        <FavoriteIcon style={{ color: '#e91e63', fontSize: heartSize }} />
+        <FavoriteIcon
+          className={heartClass}
+          style={{ color: heartColor, fontSize: heartSize }}
+        />
         <span className="yua-character-health-text">Health: {health}</span>
       </div>
     </div>

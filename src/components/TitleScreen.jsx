@@ -4,7 +4,11 @@ import { Box, Button, Typography, Container } from '@mui/material';
 
 function TitleScreen({ onStartGame }) {
   return (
-    <Container component="main" maxWidth="sm" className="title-screen-container">
+    <Container
+      component="main"
+      maxWidth="sm"
+      className="title-screen-container"
+    >
       <Box
         sx={{
           marginTop: 8,
@@ -26,20 +30,10 @@ function TitleScreen({ onStartGame }) {
           >
             はじめる
           </Button>
-          <Button
-            fullWidth
-            variant="outlined"
-            sx={{ mb: 2, py: 1.5 }}
-            disabled
-          >
+          <Button fullWidth variant="outlined" sx={{ mb: 2, py: 1.5 }} disabled>
             ロード
           </Button>
-          <Button
-            fullWidth
-            variant="outlined"
-            sx={{ py: 1.5 }}
-            disabled
-          >
+          <Button fullWidth variant="outlined" sx={{ py: 1.5 }} disabled>
             設定
           </Button>
         </Box>

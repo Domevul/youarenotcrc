@@ -1,119 +1,125 @@
 /**
  * イベントデータを定義します。
- * SCENE1_SPEC.md に基づいています。
+ * 新しい仕様書 `SCENE1_SPEC.md` に基づいています。
+ * Code Name: YUA
  */
 export const gameEvents = {
-  // 固定イベント (Turn 5)
-  FIXED_EVENT_TURN_5: {
+  // --- 固定イベント (Turn 4) ---
+  FIXED_EVENT_TURN_4: {
     id: 'E_FIXED_01',
-    character: '山本 紗季',
-    title: '最初の報告',
+    character: 'AIクロエ',
+    title: '最初の変異',
     description:
-      '「木島君、少し耳に入れておきたい情報があるわ」\n参加者の一人から、継続的な頭痛という、予測されていなかった副作用の報告が上がってきた。軽微ではあるが、どう対応する？',
+      '「警告。被験者ユアの生体データに、予測されていないパターンを検出」\nモニターを見ると、ユアの腕に奇妙な紋様が浮かび上がっている。これは一体…？',
     choices: [
       {
         id: 'C01a',
-        text: '即時公表し、治験を一時中断',
-        description:
-          '「すぐに公表し、原因が特定できるまで治験は中断だ」\n誠実な対応は、長期的には信頼に繋がるはずだ。',
+        text: '即時投与を中断し、原因を調査',
+        description: '「ユア、大丈夫か？すぐに調べる」\n彼女の安全が最優先だ。',
         effects: {
-          money: -50000,
-          reputation: -10, // 即時低下
-          stopTurns: 2,
-          reputationGainLater: {
-            turns: 2,
-            amount: 25, // -10から+15になるので、差分は+25
-          },
+          stopTurns: 1,
+          affection: 15,
+          money: -30000,
         },
       },
       {
         id: 'C01b',
-        text: '経過観察とし、治験を継続',
+        text: '些細な反応とみなし、投与を継続',
         description:
-          '「もう少し様子を見よう。すぐに大きな問題になるとは考えにくい」\nリスクはあるが、プロジェクトの遅延は避けたい。',
+          '「計画通りだ。問題ない。続けよう」\n研究を遅らせるわけにはいかない。',
         effects: {
+          health: -5,
           potentialRisk: {
             chance: 0.5,
-            reputation: -30,
+            effect: { healthMax: -10 }, // healthの上限が-10
+            message: '無理な投与がたたり、ユアの体に後遺症が残ってしまった…',
           },
         },
       },
       {
         id: 'C01c',
-        text: '報告を隠蔽する',
+        text: '変異を「成功の兆候」として報告',
         description:
-          '「…この件は、一旦我々の胸に収めておこう」\n最もリスクの高い選択肢。しかし、成功のためには時に決断が必要だ。',
+          '「素晴らしい…！これを成功例として報告するんだ」\nこれはチャンスだ。利用しない手はない。',
         effects: {
-          hideReport: true,
+          money: 50000,
+          affection: -20,
         },
       },
     ],
   },
-  // --- Action-specific Random Events ---
-  RANDOM_TEAM_MORALE_DROP: {
-    id: 'E_RANDOM_03',
-    character: 'チームメンバー',
-    title: 'チームの士気低下',
-    description:
-      '研究室の空気が少し重い。「最近、少し停滞気味じゃないか…？」という声が聞こえてきた。現状維持が続いたことで、チームの士気が低下しているようだ。',
-    choices: [
-      {
-        id: 'CR03a',
-        text: '気合を入れ直す',
-        description: '「皆、もう一度目標を確認しよう！」',
-        effects: { reputation: -2 },
-      },
-    ],
-  },
-  RANDOM_SECONDARY_DATA: {
-    id: 'E_RANDOM_04',
-    character: '研究員',
-    title: '副次データの発見',
-    description:
-      '「リーダー！すごいものが見つかりました！」\n高度なデータ解析の過程で、FMA-214が持つ別の薬効を示唆するデータが偶然発見された。',
-    choices: [
-      {
-        id: 'CR04a',
-        text: '素晴らしい！',
-        description: '「これは大きな発見だ！すぐに記録しておいてくれ」',
-        effects: { reputation: 5 },
-      },
-    ],
-  },
-  // ランダムイベントの例
-  RANDOM_RIVAL_NEWS: {
+
+  // --- ランダムイベントの例 ---
+  RANDOM_NIGHTMARE: {
     id: 'E_RANDOM_01',
-    character: 'ニュース速報',
-    title: 'ライバルの影',
+    trigger: (state) => state.yuaHealth < 50, // Healthが50未満の時に発生しやすい
+    character: 'ユア',
+    title: '悪夢',
     description:
-      'スマホが震える。ニュースアプリの通知だ。『ヘリオス製薬、画期的新薬で臨床試験開始』…我々のFMA-214と同じ領域の薬だ。プレッシャーがかかる。',
+      '深夜、研究室にユアの苦しそうな声が響く。「う…、やめて…」\n彼女は悪夢にうなされているようだ。',
     choices: [
       {
         id: 'CR01a',
-        text: '内容を詳しく確認する',
-        description: '先を越された…？いや、まだだ。',
-        effects: { reputation: -5 },
+        text: 'そばにいてあげる',
+        description: '「大丈夫、僕がそばにいる」',
+        effects: { affection: 10, health: 5 },
+      },
+      {
+        id: 'CR01b',
+        text: '鎮静剤を投与する',
+        description: '最も手っ取り早い解決策だ。',
+        effects: { health: 10, money: -10000 },
+      },
+      {
+        id: 'CR01c',
+        text: 'データ収集のチャンスと捉える',
+        description: 'この状態の脳波は貴重なデータになるかもしれない。',
+        effects: { affection: -15, data: 2 },
       },
     ],
   },
-  RANDOM_MEDIA_INTEREST: {
+  RANDOM_MEMORY_FRAGMENT: {
     id: 'E_RANDOM_02',
-    character: '医療ジャーナリスト',
-    title: 'メディアの注目',
+    trigger: (state) => state.yuaAffection > 40, // Affectionが高い時に発生
+    character: 'ユア',
+    title: '思い出話',
     description:
-      '一本の電話が鳴る。「もしもし、月刊メディカル・トゥデイの者ですが、FMA-214について少しお話を伺えませんか？」 プロジェクトが外部の注目を集め始めたようだ。',
+      '「ねえ、聞いてくれる…？」\nふとした瞬間に、ユアが自分の過去についてぽつりぽつりと話し始めた。',
     choices: [
       {
         id: 'CR02a',
-        text: '限定的な情報を提供する',
-        description: 'うまく利用すれば、評判を高めるチャンスになるかもしれない。',
-        effects: { reputation: 10, money: -5000 },
+        text: '黙って話を聞く',
+        description: '彼女のことを、もっと知りたい。',
+        effects: { affection: 15 },
+        unlocksStory: 'yua_past_1', // ストーリーフラグをアンロック
       },
       {
         id: 'CR02b',
-        text: '今はまだ、と断る',
-        description: '下手に情報を出すべき時ではない。',
-        effects: {},
+        text: '興味がないと流す',
+        description: '今は研究に集中したい。',
+        effects: { affection: -10 },
+      },
+    ],
+  },
+  RANDOM_SYSTEM_ALERT: {
+    id: 'E_RANDOM_03',
+    trigger: () => Math.random() < 0.15, // 15%の確率で発生
+    character: 'AIクロエ',
+    title: 'システムの警告',
+    description:
+      '「警告。生命維持装置に異常を検知。パラメータが不安定です」\nモニターに赤いアラートが点滅している。すぐに対応が必要だ。',
+    choices: [
+      {
+        id: 'CR03a',
+        text: '即時修復する',
+        description: '「すぐに手動で修復するんだ！」',
+        effects: { money: -25000, health: 5 },
+      },
+      {
+        id: 'CR03b',
+        text: '予備システムに切り替える',
+        description: 'コストはかかるが、こちらの方が安全だ。',
+        effects: { money: -60000, health: 15 },
       },
     ],
   },
