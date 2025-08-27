@@ -20,6 +20,14 @@
 .yua-character-status {
   margin-top: 20px;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px; /* Increased gap */
+  width: 100%;
+}
+
+.status-item {
+  display: flex;
   align-items: center;
   gap: 8px;
 }
@@ -43,9 +51,12 @@
   }
 }
 
-.yua-character-health-text {
+.yua-character-health-text,
+.yua-character-affection-text {
   font-family: 'Roboto', sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   color: #333;
+  min-width: 3ch; /* Reserve space for up to 3 digits */
+  text-align: left;
 }
