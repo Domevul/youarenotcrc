@@ -1,5 +1,6 @@
 import React from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import HealingIcon from '@mui/icons-material/Healing';
 import './YuaCharacter.css';
 
 /**
@@ -26,11 +27,20 @@ const YuaCharacter = ({ health, affection }) => {
         alt="Yua"
       />
       <div className="yua-character-status">
-        <FavoriteIcon
-          className={heartClass}
-          style={{ color: heartColor, fontSize: heartSize }}
-        />
-        <span className="yua-character-health-text">Health: {health}</span>
+        {/* Affection Status */}
+        <div className="status-item affection-status">
+          <FavoriteIcon
+            className={heartClass}
+            style={{ color: heartColor, fontSize: heartSize }}
+          />
+          <span className="yua-character-affection-text">{affection}</span>
+        </div>
+
+        {/* Health Status */}
+        <div className="status-item health-status">
+          <HealingIcon style={{ color: '#4caf50', fontSize: '24px' }} />
+          <span className="yua-character-health-text">{health}</span>
+        </div>
       </div>
     </div>
   );
