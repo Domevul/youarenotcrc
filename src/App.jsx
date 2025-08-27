@@ -69,6 +69,12 @@ function App() {
   const [gamePhase, setGamePhase] = useState('title');
   const [storyScenes, setStoryScenes] = useState([]);
   const [showStory, setShowStory] = useState(false);
+  const [activeActionTab, setActiveActionTab] = useState(null);
+
+  const handleActionTabChange = (newValue) => {
+    // If the same tab is clicked, close the panel. Otherwise, open the new one.
+    setActiveActionTab((prev) => (prev === newValue ? null : newValue));
+  };
 
   useEffect(() => {
     if (gamePhase === 'prologue') {
@@ -235,7 +241,7 @@ function App() {
         onReturnToTitle={handleReturnToTitle}
         onSave={() => alert('セーブ機能は現在開発中です。')}
       />
-      <main>
+      <main className="app-main">
         <GameScreen
           gameState={gameState}
           onAction={handleAction}
@@ -243,9 +249,13 @@ function App() {
           onEventChoice={handleEventChoice}
           yuaHealth={gameState.yuaHealth}
           yuaAffection={gameState.yuaAffection}
+          activeActionTab={activeActionTab}
         />
       </main>
-      <Footer />
+      <Footer
+        onActionTabChange={handleActionTabChange}
+        activeActionTab={activeActionTab}
+      />
       <GameOverModal
         gameStatus={gameState.gameStatus}
         onRestart={handleRestart}

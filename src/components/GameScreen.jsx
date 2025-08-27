@@ -59,6 +59,111 @@ const ActionCard = ({ title, icon, description, children }) => (
   </Card>
 );
 
+import { Paper } from '@mui/material';
+
+const MobileActionPanel = ({ activeTab, onAction, isActionDisabled }) => {
+  if (!activeTab) return null;
+
+  const renderActions = () => {
+    switch (activeTab) {
+      case '投与':
+        return (
+          <>
+            <Button
+              variant="contained"
+              color="warning"
+              startIcon={<Biotech />}
+              onClick={() => onAction('ADMINISTER_STANDARD')}
+              disabled={isActionDisabled}
+              fullWidth
+            >
+              標準プロトコル投与 ($30,000)
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              startIcon={<Biotech />}
+              onClick={() => onAction('ADMINISTER_HIGH_RISK')}
+              disabled={isActionDisabled}
+              fullWidth
+            >
+              高リスク・高リターン投与 ($50,000)
+            </Button>
+          </>
+        );
+      case 'ケア':
+        return (
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<People />}
+              onClick={() => onAction('TALK_TO_YUA')}
+              disabled={isActionDisabled}
+              fullWidth
+            >
+              ユアと会話する ($0)
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              startIcon={<Healing />}
+              onClick={() => onAction('PROVIDE_PALLIATIVE_CARE')}
+              disabled={isActionDisabled}
+              fullWidth
+            >
+              緩和ケアを行う ($40,000)
+            </Button>
+          </>
+        );
+      case '研究':
+        return (
+          <>
+            <Button
+              variant="outlined"
+              startIcon={<TrendingUp />}
+              onClick={() => onAction('BASIC_RESEARCH')}
+              disabled={isActionDisabled}
+              fullWidth
+            >
+              基礎研究 ($20,000)
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<ThumbsUpDown />}
+              onClick={() => onAction('ANALYZE_SIDE_EFFECTS')}
+              disabled={isActionDisabled}
+              fullWidth
+            >
+              副作用の分析 ($60,000)
+            </Button>
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <Paper
+      className="mobile-action-panel"
+      elevation={4}
+      sx={{
+        p: 2,
+        position: 'fixed',
+        bottom: '56px', // Standard height of BottomNavigation
+        left: 0,
+        right: 0,
+        zIndex: 999, // Below footer but above content
+      }}
+    >
+      <Grid container spacing={1} direction="column">
+        {renderActions()}
+      </Grid>
+    </Paper>
+  );
+};
+
 function GameScreen({
   gameState,
   onAction,
@@ -66,6 +171,7 @@ function GameScreen({
   onEventChoice,
   yuaHealth,
   yuaAffection,
+  activeActionTab,
 }) {
   const formatMoney = (amount) => {
     return new Intl.NumberFormat('ja-JP', {
@@ -128,7 +234,7 @@ function GameScreen({
       )}
 
       {/* Action Buttons */}
-      <Box>
+      <Box className="action-cards-container">
         <Typography variant="h5" gutterBottom>
           アクションを選択
         </Typography>
@@ -214,6 +320,13 @@ function GameScreen({
           </Grid>
         </Grid>
       </Box>
+
+      {/* Mobile Action Panel */}
+      <MobileActionPanel
+        activeTab={activeActionTab}
+        onAction={onAction}
+        isActionDisabled={isActionDisabled}
+      />
     </Box>
   );
 }

@@ -7,6 +7,14 @@ main {
   min-height: 70vh;
 }
 
+/* Add padding at the bottom on mobile to avoid overlap with fixed footer/panel */
+@media (max-width: 767px) {
+  .app-main {
+    /* Footer (56px) + Action Panel (generous 120px) + spacing */
+    padding-bottom: 200px;
+  }
+}
+
 header {
   background-color: #282c34;
   padding: 20px;
