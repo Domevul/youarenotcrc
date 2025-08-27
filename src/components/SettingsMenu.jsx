@@ -47,9 +47,7 @@ function SettingsMenu({ onRestart, onReturnToTitle, onSave }) {
         <MenuItem onClick={() => handleMenuClick(onReturnToTitle)}>
           タイトル画面に戻る
         </MenuItem>
-        <MenuItem onClick={() => handleMenuClick(onSave)}>
-          セーブする
-        </MenuItem>
+        <MenuItem onClick={() => handleMenuClick(onSave)}>セーブする</MenuItem>
       </Menu>
     </div>
   );

@@ -14,12 +14,10 @@ import {
 } from '@mui/material';
 import {
   MonetizationOn,
-  Group,
   Biotech,
   Campaign,
   People,
   TrendingUp,
-  HourglassEmpty,
   Science,
   ThumbsUpDown,
   Healing,
@@ -83,43 +81,27 @@ function GameScreen({
       <EventModal event={currentEvent} onChoice={onEventChoice} />
 
       {/* Status Display */}
-      <Box sx={{ mb: 2 }}>
+      <Box sx={{ mb: 3 }}>
         <Typography variant="h5" gutterBottom>
-          現在の状況 (ターン: {gameState.turn} / 10)
+          研究サイクル: {gameState.turn} / 12
         </Typography>
         <Grid container spacing={3} alignItems="stretch">
+          {/* Yua's Status Area */}
+          <Grid item xs={12} md={4}>
+            <YuaCharacter health={yuaHealth} affection={yuaAffection} />
+          </Grid>
+
           {/* Main Stats Area */}
           <Grid item xs={12} md={8}>
             <Grid container spacing={3}>
-              <Grid item xs={6} md={3}>
+              <Grid item xs={6}>
                 <StatCard
                   icon={<MonetizationOn color="success" />}
                   title="資産"
                   value={formatMoney(gameState.money)}
                 />
               </Grid>
-              <Grid item xs={6} md={3}>
-                <StatCard
-                  icon={<ThumbsUpDown color="info" />}
-                  title="評判"
-                  value={`${gameState.reputation} / 100`}
-                  footer={
-                    <LinearProgress
-                      variant="determinate"
-                      value={gameState.reputation}
-                      color="info"
-                    />
-                  }
-                />
-              </Grid>
-              <Grid item xs={6} md={3}>
-                <StatCard
-                  icon={<Group color="primary" />}
-                  title="参加者"
-                  value={`${gameState.participants} 人`}
-                />
-              </Grid>
-              <Grid item xs={6} md={3}>
+              <Grid item xs={6}>
                 <StatCard
                   icon={<Biotech color="secondary" />}
                   title="データ収集率"
@@ -135,17 +117,13 @@ function GameScreen({
               </Grid>
             </Grid>
           </Grid>
-          {/* Yua's Status Area */}
-          <Grid item xs={12} md={4}>
-            <YuaCharacter health={yuaHealth} affection={yuaAffection} />
-          </Grid>
         </Grid>
       </Box>
 
       {/* Message Area */}
-      {gameState.gameStatus === 'ongoing' && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          {gameState.currentMessage}
+      {gameState.message && (
+        <Alert severity={gameState.message.type} sx={{ mb: 2 }}>
+          {gameState.message.text}
         </Alert>
       )}
 
@@ -155,75 +133,82 @@ function GameScreen({
           アクションを選択
         </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={4}>
+          {/* 投与 */}
+          <Grid item xs={12} md={4}>
             <ActionCard
-              title="広報"
-              icon={<Campaign />}
-              description="治験への参加者を募集し、プロジェクトの認知度を高めます。参加者が増えるほど、データ収集の母数が増えます。"
+              title="投与"
+              icon={<Science />}
+              description="ユアにプロトタイプを投与し、データを収集します。Healthを消費しますが、最も効率的にデータを収集できます。"
             >
               <Button
                 variant="contained"
-                startIcon={<TrendingUp />}
-                onClick={() => onAction('STANDARD_PR')}
+                color="warning"
+                startIcon={<Biotech />}
+                onClick={() => onAction('ADMINISTER_STANDARD')}
                 disabled={isActionDisabled}
               >
-                標準的な広報活動 ($10,000)
+                標準プロトコル投与 ($30,000)
               </Button>
               <Button
                 variant="contained"
-                startIcon={<TrendingUp />}
-                onClick={() => onAction('LARGE_SCALE_PR')}
+                color="error"
+                startIcon={<Biotech />}
+                onClick={() => onAction('ADMINISTER_HIGH_RISK')}
                 disabled={isActionDisabled}
               >
-                大規模な広報キャンペーン ($50,000)
+                高リスク・高リターン投与 ($50,000)
               </Button>
             </ActionCard>
           </Grid>
-          <Grid item xs={4}>
+          {/* ケア */}
+          <Grid item xs={12} md={4}>
+            <ActionCard
+              title="ケア"
+              icon={<Healing />}
+              description="ユアとの関係を築き、心身の状態を安定させます。HealthやAffectionの維持に不可欠です。"
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<People />}
+                onClick={() => onAction('TALK_TO_YUA')}
+                disabled={isActionDisabled}
+              >
+                ユアと会話する ($0)
+              </Button>
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={<Healing />}
+                onClick={() => onAction('PROVIDE_PALLIATIVE_CARE')}
+                disabled={isActionDisabled}
+              >
+                緩和ケアを行う ($40,000)
+              </Button>
+            </ActionCard>
+          </Grid>
+          {/* 研究 */}
+          <Grid item xs={12} md={4}>
             <ActionCard
               title="研究"
-              icon={<Science />}
-              description="集まった参加者からデータを収集・解析し、治験の進捗率を高めます。これがプロジェクトの主目的です。"
+              icon={<Campaign />}
+              description="直接的なデータ収集ではなく、投与の効率を高めたり、リスクを低減させたりするための補助的な活動です。"
             >
               <Button
-                variant="contained"
-                startIcon={<Biotech />}
-                onClick={() => onAction('NORMAL_DATA_COLLECTION')}
+                variant="outlined"
+                startIcon={<TrendingUp />}
+                onClick={() => onAction('BASIC_RESEARCH')}
                 disabled={isActionDisabled}
               >
-                通常のデータ収集 ($20,000)
+                基礎研究 ($20,000)
               </Button>
               <Button
-                variant="contained"
-                startIcon={<Biotech />}
-                onClick={() => onAction('ADVANCED_DATA_ANALYSIS')}
+                variant="outlined"
+                startIcon={<ThumbsUpDown />}
+                onClick={() => onAction('ANALYZE_SIDE_EFFECTS')}
                 disabled={isActionDisabled}
               >
-                高度なデータ解析 ($80,000)
-              </Button>
-            </ActionCard>
-          </Grid>
-          <Grid item xs={4}>
-            <ActionCard
-              title="患者へのケア"
-              icon={<Healing />}
-              description="患者のケア環境を改善し、体調や精神的な安定を図ります。患者の状態は治験の継続に影響します。"
-            >
-              <Button
-                variant="contained"
-                startIcon={<HourglassEmpty />}
-                onClick={() => onAction('MAINTAIN_STATUS_QUO')}
-                disabled={isActionDisabled}
-              >
-                基本的なケア ($0)
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<Healing />}
-                onClick={() => onAction('INVEST_IN_TEAM')}
-                disabled={isActionDisabled}
-              >
-                療養環境の改善 ($30,000)
+                副作用の分析 ($60,000)
               </Button>
             </ActionCard>
           </Grid>
