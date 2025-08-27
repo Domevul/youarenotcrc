@@ -65,7 +65,8 @@ function GameScreen({
   onAction,
   currentEvent,
   onEventChoice,
-  currentChapter,
+  yuaHealth,
+  yuaAffection,
 }) {
   const formatMoney = (amount) => {
     return new Intl.NumberFormat('ja-JP', {
@@ -100,18 +101,6 @@ function GameScreen({
       <EventModal event={currentEvent} onChoice={onEventChoice} />
 
       {getGameStatusAlert()}
-
-      {/* Chapter Goal Display */}
-      {currentChapter && gameState.gameStatus === 'ongoing' && (
-        <Card sx={{ mb: 3, backgroundColor: 'primary.light' }}>
-          <CardContent>
-            <Typography variant="h5" component="div" gutterBottom>
-              {currentChapter.title}
-            </Typography>
-            <Typography variant="body1">{currentChapter.goalText}</Typography>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Status Display */}
       <Box sx={{ mb: 4 }}>
@@ -168,10 +157,7 @@ function GameScreen({
           </Grid>
           {/* Yua's Status Area */}
           <Grid item xs={12} md={4}>
-            <YuaCharacter
-              health={gameState.yuaHealth}
-              affection={gameState.yuaAffection}
-            />
+            <YuaCharacter health={yuaHealth} affection={yuaAffection} />
           </Grid>
         </Grid>
       </Box>

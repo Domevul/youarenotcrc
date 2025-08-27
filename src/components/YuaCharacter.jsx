@@ -12,6 +12,7 @@ const YuaCharacter = ({ health, affection }) => {
 
   return (
     <div className="yua-character-container">
+      <div className="yua-character-name">ユア</div>
       <img
         src="/yua-placeholder.svg"
         className="yua-character-body"
