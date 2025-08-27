@@ -10,6 +10,8 @@ export const INITIAL_GAME_STATE = {
   reputation: 50, // 評判
   participants: 0, // 参加者
   data: 0, // データ収集率
+  yuaHealth: 100, // ユアの体調
+  yuaAffection: 20, // ユアの好感度
   gameStatus: 'ongoing', // 'ongoing', 'event', 'won', 'lost'
   currentMessage: 'プロジェクトを開始します。最初のアクションを選択してください。', // プレイヤーへのメッセージ
   currentChapter: 1, // 現在の章
@@ -62,30 +64,37 @@ export const ACTIONS = {
     cost: 20000,
     effect: () => ({
       data: 12,
+      yuaHealth: -5, // 体調への負担
+      yuaAffection: 2, // 治験が進むことへの期待
     }),
-    message: '通常のデータ収集を完了し、進捗を得た。',
+    message: '通常のデータ収集を完了。ユアの体調に少し負担がかかったが、研究は進んだ。',
   },
   ADVANCED_DATA_ANALYSIS: {
     cost: 80000,
     effect: () => ({
       data: 25,
+      yuaHealth: -12, // 体調への大きな負担
+      yuaAffection: 4, // 大きな進捗への期待と感謝
       // 副次データ発見の可能性はイベントとして実装
     }),
-    message: '高度なデータ解析により、研究が大きく進んだ。',
+    message: '高度なデータ解析を実施。ユアの体調は少し悪化したが、研究は大きく進展した。',
   },
   // チーム
   MAINTAIN_STATUS_QUO: {
     cost: 0,
     effect: () => ({
-      // 士気低下リスクはイベントとして実装
+      yuaHealth: -2, // 環境が変わらないことによる軽微なストレス
+      yuaAffection: -2, // 何もしてくれないという小さな失望
     }),
-    message: 'チームの現状を維持することを決定した。',
+    message: 'チームの現状を維持することを決定した。ユアの表情は少し暗い。',
   },
   INVEST_IN_TEAM: {
     cost: 30000,
     effect: () => ({
-      // 次のターンのデータ収集率+2%は特殊効果として実装
+      dataCollectionBonus: 2, // 次のターンのデータ収集率+2%
+      yuaHealth: 5, // ケア環境の改善による体調の回復
+      yuaAffection: 5, // スタッフが親切になったことへの感謝
     }),
-    message: 'チームに投資し、士気を高めた。',
+    message: 'チームへの投資により、研究環境が改善された。ユアも少し安心したようだ。',
   },
 };

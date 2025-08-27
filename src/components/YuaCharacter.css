@@ -1,0 +1,39 @@
+.yua-character-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+  width: 200px;
+  height: 300px;
+  position: relative; /* For positioning status elements */
+}
+
+.yua-character-body {
+  width: 80px;
+  height: 150px;
+  border-radius: 40px 40px 0 0; /* Simple "human" shape */
+  transition: background-color 0.5s ease;
+  border: 2px solid #333;
+}
+
+.yua-character-status {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.yua-character-status .MuiSvgIcon-root {
+  transition: font-size 0.5s ease;
+}
+
+.yua-character-health-text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
