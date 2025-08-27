@@ -2,3 +2,16 @@
   background-color: #f5f5f5; /* A slightly off-white background for the whole screen */
   min-height: 100vh;
 }
+
+.mobile-action-panel {
+  display: none; /* Hidden by default */
+}
+
+@media (max-width: 767px) {
+  .action-cards-container {
+    display: none;
+  }
+  .mobile-action-panel {
+    display: block; /* Shown on mobile */
+  }
+}

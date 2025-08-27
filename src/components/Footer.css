@@ -6,3 +6,27 @@
   font-size: 0.9em;
   color: #666;
 }
+
+/* Hide the mobile footer by default on larger screens */
+.mobile-footer {
+  display: none;
+}
+
+.skill-tree-button {
+  /* This class is for selection, hiding is done via inline style for now */
+  /* but we can add !important here if needed */
+}
+
+/* Styles for mobile devices (screen width < 768px) */
+@media (max-width: 767px) {
+  /* Show the mobile footer */
+  .mobile-footer {
+    display: block;
+    z-index: 1000; /* Ensure it's on top of other content */
+  }
+
+  /* Hide the desktop footer */
+  .desktop-footer {
+    display: none;
+  }
+}
