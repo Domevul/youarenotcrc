@@ -4,6 +4,7 @@ import GameScreen from './components/GameScreen.jsx';
 import Footer from './components/Footer.jsx';
 import TitleScreen from './components/TitleScreen.jsx';
 import StoryDialog from './components/StoryDialog.jsx';
+import GameOverModal from './components/GameOverModal.jsx';
 import { prologue } from './game-prologue.js';
 import { gameEvents } from './game-events.js';
 import { story } from './game-story.js'; // ストーリーデータをインポート
@@ -251,6 +252,11 @@ function App() {
         />
       </main>
       <Footer />
+      <GameOverModal
+        gameStatus={gameState.gameStatus}
+        onRestart={handleRestart}
+        onReturnToTitle={handleReturnToTitle}
+      />
     </div>
   );
 }
