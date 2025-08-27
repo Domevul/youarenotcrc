@@ -253,7 +253,7 @@ function GameScreen({
         <Typography variant="h5" gutterBottom>
           アクションを選択
         </Typography>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} alignItems="stretch">
           {/* 投与 */}
           <Grid item xs={12} md={4}>
             <ActionCard
