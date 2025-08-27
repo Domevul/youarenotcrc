@@ -52,7 +52,7 @@ export const gameEvents = {
   // --- ランダムイベントの例 ---
   RANDOM_NIGHTMARE: {
     id: 'E_RANDOM_01',
-    trigger: (state) => state.yuaHealth < 50, // Healthが50未満の時に発生しやすい
+    trigger: (state) => state.yuaHealth < 35, // Healthが35未満の時に発生しやすい
     character: 'ユア',
     title: '悪夢',
     description:
@@ -74,7 +74,7 @@ export const gameEvents = {
         id: 'CR01c',
         text: 'データ収集のチャンスと捉える',
         description: 'この状態の脳波は貴重なデータになるかもしれない。',
-        effects: { affection: -15, data: 2 },
+        effects: { affection: -25, data: 2 },
       },
     ],
   },
@@ -103,7 +103,7 @@ export const gameEvents = {
   },
   RANDOM_SYSTEM_ALERT: {
     id: 'E_RANDOM_03',
-    trigger: () => Math.random() < 0.15, // 15%の確率で発生
+    trigger: () => Math.random() < 0.08, // 8%の確率で発生
     character: 'AIクロエ',
     title: 'システムの警告',
     description:
@@ -113,13 +113,13 @@ export const gameEvents = {
         id: 'CR03a',
         text: '即時修復する',
         description: '「すぐに手動で修復するんだ！」',
-        effects: { money: -25000, health: 5 },
+        effects: { money: -40000, health: 5 },
       },
       {
         id: 'CR03b',
         text: '予備システムに切り替える',
         description: 'コストはかかるが、こちらの方が安全だ。',
-        effects: { money: -60000, health: 15 },
+        effects: { money: -75000, health: 15 },
       },
     ],
   },
