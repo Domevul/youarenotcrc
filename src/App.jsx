@@ -18,28 +18,16 @@ function App() {
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [gamePhase, setGamePhase] = useState('title'); // 'title', 'prologue', 'game'
+  const [storyScenes, setStoryScenes] = useState([]);
+  const [showStory, setShowStory] = useState(false);
 
-  // 章のクリアをチェックする副作用
   useEffect(() => {
-    if (gameState.gameStatus !== 'ongoing') return;
-
-    const currentChapterNumber = gameState.currentChapter;
-    const chapter = story[currentChapterNumber];
-
-    if (chapter && chapter.isCompleted(gameState)) {
-      // 最終章は通常の勝利条件で処理されるため、ここでは何もしない
-      if (currentChapterNumber >= Object.keys(story).length) {
-        return;
-      }
-
-      setGameState((prev) => ({
-        ...prev,
-        currentChapter: prev.currentChapter + 1,
-        currentMessage: chapter.completionMessage,
-      }));
+    // ゲーム開始時にプロローグをセット
+    if (gamePhase === 'prologue') {
+      setStoryScenes(story.prologue);
+      setShowStory(true);
     }
-  }, [gameState]);
-
+  }, [gamePhase]);
 
   // --- ゲームフェーズ管理 ---
   const startGame = () => {
@@ -49,6 +37,7 @@ function App() {
   };
 
   const handlePrologueComplete = () => {
+    setShowStory(false);
     setGamePhase('game');
   };
 
@@ -160,10 +149,11 @@ function App() {
     const effects = action.effect(gameState.reputation);
     let newMoney = gameState.money - action.cost + (effects.money || 0);
     let newParticipants = gameState.participants + (effects.participants || 0);
-    // Apply bonus data and reset it
     let newData =
       gameState.data + (effects.data || 0) + gameState.dataCollectionBonus;
     let newReputation = gameState.reputation + (effects.reputation || 0);
+    let newYuaHealth = gameState.yuaHealth + (effects.yuaHealth || 0);
+    let newYuaAffection = gameState.yuaAffection + (effects.yuaAffection || 0);
     const newTurn = gameState.turn + 1;
     let newMessage = action.message;
     let newBonus = 0; // Reset bonus by default
@@ -220,6 +210,8 @@ function App() {
       participants: newParticipants,
       data: Math.min(100, newData),
       reputation: Math.max(0, Math.min(100, newReputation)),
+      yuaHealth: Math.max(0, Math.min(100, newYuaHealth)),
+      yuaAffection: Math.max(0, newYuaAffection),
       turn: newTurn,
       gameStatus: newGameStatus,
       currentMessage: newMessage,
@@ -236,14 +228,11 @@ function App() {
     return <TitleScreen onStartGame={startGame} />;
   }
 
-  if (gamePhase === 'prologue') {
-    return (
-      <StoryDialog scenes={prologue} onComplete={handlePrologueComplete} />
-    );
-  }
-
   return (
     <div className="App">
+      {showStory && (
+        <StoryDialog scenes={storyScenes} onComplete={handlePrologueComplete} />
+      )}
       <Header
         drugName="FMA-214"
         turn={gameState.turn}
@@ -257,7 +246,8 @@ function App() {
           onAction={handleAction}
           currentEvent={currentEvent}
           onEventChoice={handleEventChoice}
-          currentChapter={story[gameState.currentChapter]}
+          yuaHealth={gameState.yuaHealth}
+          yuaAffection={gameState.yuaAffection}
         />
       </main>
       <Footer />

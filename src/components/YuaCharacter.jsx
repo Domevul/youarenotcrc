@@ -31,6 +31,7 @@ const YuaCharacter = ({ health, affection }) => {
 
   return (
     <div className="yua-character-container">
+      <div className="yua-character-name">ユア</div>
       <div className="yua-character-body" style={bodyStyle}>
         {/* This div represents Yua's body shape */}
       </div>
