@@ -175,7 +175,7 @@ function GameScreen({
           アクションを選択
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={6} lg={4}>
             <ActionCard
               title="広報"
               icon={<Campaign />}
@@ -199,7 +199,7 @@ function GameScreen({
               </Button>
             </ActionCard>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={6} lg={4}>
             <ActionCard
               title="研究"
               icon={<Science />}
@@ -223,7 +223,7 @@ function GameScreen({
               </Button>
             </ActionCard>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={6} lg={4}>
             <ActionCard
               title="チーム"
               icon={<People />}
