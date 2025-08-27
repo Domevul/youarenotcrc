@@ -250,6 +250,7 @@ function App() {
           yuaHealth={gameState.yuaHealth}
           yuaAffection={gameState.yuaAffection}
           activeActionTab={activeActionTab}
+          initialMoney={INITIAL_GAME_STATE.money}
         />
       </main>
       <Footer

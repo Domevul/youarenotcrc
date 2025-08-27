@@ -172,6 +172,7 @@ function GameScreen({
   yuaHealth,
   yuaAffection,
   activeActionTab,
+  initialMoney,
 }) {
   const formatMoney = (amount) => {
     return new Intl.NumberFormat('ja-JP', {
@@ -181,6 +182,13 @@ function GameScreen({
   };
 
   const isActionDisabled = gameState.gameStatus !== 'ongoing';
+
+  const moneyPercent = (gameState.money / initialMoney) * 100;
+  const getMoneyBarColor = (percent) => {
+    if (percent > 50) return 'success';
+    if (percent > 20) return 'warning';
+    return 'error';
+  };
 
   return (
     <Box className="game-screen" sx={{ p: 3 }}>
@@ -205,6 +213,13 @@ function GameScreen({
                   icon={<MonetizationOn color="success" />}
                   title="資産"
                   value={formatMoney(gameState.money)}
+                  footer={
+                    <LinearProgress
+                      variant="determinate"
+                      value={moneyPercent}
+                      color={getMoneyBarColor(moneyPercent)}
+                    />
+                  }
                 />
               </Grid>
               <Grid item xs={6}>
