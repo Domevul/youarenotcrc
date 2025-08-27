@@ -91,14 +91,14 @@ function GameScreen({
           {/* Main Stats Area */}
           <Grid item xs={12} md={8}>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={6} md={3}>
                 <StatCard
                   icon={<MonetizationOn color="success" />}
                   title="資産"
                   value={formatMoney(gameState.money)}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={6} md={3}>
                 <StatCard
                   icon={<ThumbsUpDown color="info" />}
                   title="評判"
@@ -112,14 +112,14 @@ function GameScreen({
                   }
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={6} md={3}>
                 <StatCard
                   icon={<Group color="primary" />}
                   title="参加者"
                   value={`${gameState.participants} 人`}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={6} md={3}>
                 <StatCard
                   icon={<Biotech color="secondary" />}
                   title="データ収集率"
@@ -155,7 +155,7 @@ function GameScreen({
           アクションを選択
         </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={4}>
             <ActionCard
               title="広報"
               icon={<Campaign />}
@@ -179,7 +179,7 @@ function GameScreen({
               </Button>
             </ActionCard>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={4}>
             <ActionCard
               title="研究"
               icon={<Science />}
@@ -203,7 +203,7 @@ function GameScreen({
               </Button>
             </ActionCard>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={4}>
             <ActionCard
               title="患者へのケア"
               icon={<Healing />}
