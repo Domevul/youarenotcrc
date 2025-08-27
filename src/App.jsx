@@ -5,32 +5,78 @@ import Footer from './components/Footer.jsx';
 import TitleScreen from './components/TitleScreen.jsx';
 import StoryDialog from './components/StoryDialog.jsx';
 import GameOverModal from './components/GameOverModal.jsx';
-import { prologue } from './game-prologue.js';
 import { gameEvents } from './game-events.js';
-import { story } from './game-story.js'; // ストーリーデータをインポート
-import {
-  INITIAL_GAME_STATE,
-  ACTIONS,
-  GAME_CONDITIONS,
-} from './game-settings.js';
+import { story } from './game-story.js';
 import './App.css';
+
+// --- Game Settings (based on new spec) ---
+const MAX_TURNS = 12;
+const WIN_DATA_PERCENTAGE = 100;
+const LOSE_MONEY_THRESHOLD = 0;
+const LOSE_AFFECTION_THRESHOLD = -50;
+
+const INITIAL_GAME_STATE = {
+  money: 500000,
+  turn: 1,
+  data: 0,
+  yuaHealth: 100,
+  yuaHealthMax: 100,
+  yuaAffection: 0,
+  gameStatus: 'ongoing', // 'ongoing', 'event', 'won', 'lost'
+  message: { text: '研究サイクルを開始します。', type: 'info' },
+  stopTurns: 0,
+  researchBonus: 0, // for 'BASIC_RESEARCH' action
+};
+
+const ACTIONS = {
+  ADMINISTER_STANDARD: {
+    cost: 30000,
+    effect: (bonus) => ({ data: 15 + bonus, health: -10 }),
+    message:
+      '標準プロトコルを投与。データを収集したが、ユアの体調が少し悪化した。',
+  },
+  ADMINISTER_HIGH_RISK: {
+    cost: 50000,
+    effect: (bonus) => ({ data: 30 + bonus, health: -25 }),
+    message:
+      '高リスク投与を敢行。多くのデータを得たが、ユアの体調が大きく悪化した。',
+  },
+  TALK_TO_YUA: {
+    cost: 0,
+    effect: () => ({ affection: 10 }),
+    message: 'ユアと会話した。彼女は少し心を開いてくれたようだ。',
+  },
+  PROVIDE_PALLIATIVE_CARE: {
+    cost: 40000,
+    effect: () => ({ health: 20, affection: 5 }),
+    message: '緩和ケアを行った。ユアの体調が少し回復し、感謝された。',
+  },
+  BASIC_RESEARCH: {
+    cost: 20000,
+    effect: () => ({ researchBonus: 3 }),
+    message: '基礎研究を行った。次の投与で得られるデータが増加する。',
+  },
+  ANALYZE_SIDE_EFFECTS: {
+    cost: 60000,
+    effect: () => ({ sideEffectChanceModifier: -0.15 }), // Reduces chance of side effect events
+    message: '副作用の分析を行った。今後のリスクが少し低下した。',
+  },
+};
 
 function App() {
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
   const [currentEvent, setCurrentEvent] = useState(null);
-  const [gamePhase, setGamePhase] = useState('title'); // 'title', 'prologue', 'game'
+  const [gamePhase, setGamePhase] = useState('title');
   const [storyScenes, setStoryScenes] = useState([]);
   const [showStory, setShowStory] = useState(false);
 
   useEffect(() => {
-    // ゲーム開始時にプロローグをセット
     if (gamePhase === 'prologue') {
       setStoryScenes(story.prologue);
       setShowStory(true);
     }
   }, [gamePhase]);
 
-  // --- ゲームフェーズ管理 ---
   const startGame = () => {
     setGameState(INITIAL_GAME_STATE);
     setCurrentEvent(null);
@@ -42,186 +88,134 @@ function App() {
     setGamePhase('game');
   };
 
-  // --- 設定メニュー用の関数 ---
   const handleRestart = () => {
     setGameState(INITIAL_GAME_STATE);
     setCurrentEvent(null);
     setGamePhase('game');
   };
 
-  const handleReturnToTitle = () => {
-    setGamePhase('title');
-  };
+  const handleReturnToTitle = () => setGamePhase('title');
 
-  const handleSave = () => {
-    // TODO: 今後の開発でFirebaseに保存する機能を実装
-    console.log('Game state saved (not really):', gameState);
-    alert('セーブ機能は現在開発中です。');
-  };
-
-  const triggerEvent = (turn) => {
-    // Turn 5 Fixed Event
-    if (turn === 5) {
-      setCurrentEvent(gameEvents.FIXED_EVENT_TURN_5);
-      setGameState((prev) => ({ ...prev, gameStatus: 'event' }));
-      return true;
+  const triggerEvent = (turn, state) => {
+    // Fixed Event
+    if (turn === 4) {
+      setCurrentEvent(gameEvents.FIXED_EVENT_TURN_4);
+      return;
     }
-    // Random Event Logic (e.g., 25% chance)
-    if (Math.random() < 0.25) {
-      const randomEvents = [
-        gameEvents.RANDOM_RIVAL_NEWS,
-        gameEvents.RANDOM_MEDIA_INTEREST,
-      ];
-      const event = randomEvents[Math.floor(Math.random() * randomEvents.length)];
+    // Random Events
+    const potentialEvents = Object.values(gameEvents).filter(
+      (event) => event.trigger && event.trigger(state)
+    );
+    if (potentialEvents.length > 0) {
+      const event =
+        potentialEvents[Math.floor(Math.random() * potentialEvents.length)];
       setCurrentEvent(event);
-      setGameState((prev) => ({ ...prev, gameStatus: 'event' }));
-      return true;
     }
-    return false;
+  };
+
+  const applyEffects = (state, effects) => {
+    const newState = { ...state };
+    newState.money = (newState.money || 0) + (effects.money || 0);
+    newState.data = (newState.data || 0) + (effects.data || 0);
+    newState.yuaHealth = (newState.yuaHealth || 0) + (effects.health || 0);
+    newState.yuaAffection =
+      (newState.yuaAffection || 0) + (effects.affection || 0);
+    newState.yuaHealthMax =
+      (newState.yuaHealthMax || 100) + (effects.healthMax || 0);
+    newState.stopTurns = (newState.stopTurns || 0) + (effects.stopTurns || 0);
+
+    if (effects.potentialRisk && Math.random() < effects.potentialRisk.chance) {
+      return applyEffects(newState, effects.potentialRisk.effect);
+    }
+    return newState;
   };
 
   const handleEventChoice = (choice) => {
-    const effects = choice.effects;
-    let newState = { ...gameState };
-
-    // Apply immediate effects
-    newState.money = (newState.money || 0) + (effects.money || 0);
-    newState.reputation = (newState.reputation || 0) + (effects.reputation || 0);
-
-    // Handle special effects
-    if (effects.stopTurns) {
-      newState.stopTurns = effects.stopTurns;
-    }
-    if (effects.reputationGainLater) {
-      newState.reputationGainLater = effects.reputationGainLater;
-    }
-    if (effects.potentialRisk) {
-      newState.potentialRisk = effects.potentialRisk;
-    }
-    if (effects.hideReport) {
-      newState.hiddenReport = true;
-    }
-
+    let newState = applyEffects(gameState, choice.effects);
     newState.gameStatus = 'ongoing';
-    newState.currentMessage =
-      'イベントの結果を反映し、アクションを再開します。';
-    setGameState(newState);
+    newState.message = {
+      text: 'イベントの結果を反映し、アクションを再開します。',
+      type: 'info',
+    };
     setCurrentEvent(null);
+    endTurn(newState);
   };
 
   const handleAction = (actionType) => {
-    if (gameState.gameStatus !== 'ongoing') return;
-
-    if (gameState.stopTurns > 0) {
-      const newTurn = gameState.turn + 1;
-      const newStopTurns = gameState.stopTurns - 1;
-      let newReputation = gameState.reputation;
-      let newMessage = `治験中断中... 残り${newStopTurns}ターン。`;
-
-      // Apply delayed reputation gain
-      if (
-        gameState.reputationGainLater &&
-        gameState.reputationGainLater.turns === newStopTurns + 1
-      ) {
-        newReputation += gameState.reputationGainLater.amount;
-        newMessage += '誠実な対応が評価され、評判が回復した！';
-      }
-
-      setGameState({
-        ...gameState,
-        turn: newTurn,
-        stopTurns: newStopTurns,
-        reputation: newReputation,
-        currentMessage: newMessage,
-      });
-      return;
-    }
+    if (gameState.gameStatus !== 'ongoing' || gameState.stopTurns > 0) return;
 
     const action = ACTIONS[actionType];
     if (!action || gameState.money < action.cost) {
       setGameState((prev) => ({
         ...prev,
-        currentMessage: '資金が不足しています。',
+        message: { text: '資金が不足しています。', type: 'error' },
       }));
       return;
     }
 
-    // --- Action Execution ---
-    const effects = action.effect(gameState.reputation);
-    let newMoney = gameState.money - action.cost + (effects.money || 0);
-    let newParticipants = gameState.participants + (effects.participants || 0);
-    let newData =
-      gameState.data + (effects.data || 0) + gameState.dataCollectionBonus;
-    let newReputation = gameState.reputation + (effects.reputation || 0);
-    let newYuaHealth = gameState.yuaHealth + (effects.yuaHealth || 0);
-    let newYuaAffection = gameState.yuaAffection + (effects.yuaAffection || 0);
-    const newTurn = gameState.turn + 1;
-    let newMessage = action.message;
-    let newBonus = 0; // Reset bonus by default
+    let newState = { ...gameState };
+    newState.money -= action.cost;
 
-    // Handle special action logic
-    if (actionType === 'INVEST_IN_TEAM') {
-      newBonus = 2; // Set bonus for the *next* turn
-      newMessage += ' 次のターンのデータ収集率が2%アップします。';
+    const effects = action.effect(newState.researchBonus);
+    newState = applyEffects(newState, effects);
+    newState.message = { text: action.message, type: 'info' };
+
+    // Reset one-time bonuses
+    newState.researchBonus = effects.researchBonus || 0;
+
+    endTurn(newState);
+  };
+
+  const endTurn = (state) => {
+    let newState = { ...state };
+
+    // Clamp values
+    newState.yuaHealth = Math.max(
+      0,
+      Math.min(newState.yuaHealth, newState.yuaHealthMax)
+    );
+    newState.data = Math.min(100, newState.data);
+
+    // Win/Loss Condition Check
+    if (newState.data >= WIN_DATA_PERCENTAGE) {
+      newState.gameStatus = 'won';
+      newState.message = {
+        text: 'データ収集率が100%に到達！コードFMAの基礎開発は成功した！',
+        type: 'success',
+      };
+    } else if (newState.yuaHealth <= 0) {
+      newState.gameStatus = 'lost';
+      newState.message = {
+        text: 'ユアのバイタルが停止しました... 私たちの研究は、最悪の結末を迎えた。',
+        type: 'error',
+      };
+    } else if (newState.money < LOSE_MONEY_THRESHOLD) {
+      newState.gameStatus = 'lost';
+      newState.message = {
+        text: '資産が底をつきました... 研究室は閉鎖です。',
+        type: 'error',
+      };
+    } else if (newState.yuaAffection <= LOSE_AFFECTION_THRESHOLD) {
+      newState.gameStatus = 'lost';
+      newState.message = {
+        text: 'ユアとの信頼関係は完全に崩壊した。彼女はもう協力してくれない。',
+        type: 'error',
+      };
+    } else if (newState.turn + 1 > MAX_TURNS) {
+      newState.gameStatus = 'lost';
+      newState.message = {
+        text: '規定サイクル数を超えました... プロジェクトはタイムオーバーです。',
+        type: 'error',
+      };
     }
 
-    // --- Post-Action Checks & State Updates ---
-    let eventTriggered = false;
-    // Check for action-specific events
-    if (actionType === 'MAINTAIN_STATUS_QUO' && Math.random() < 0.2) {
-      setCurrentEvent(gameEvents.RANDOM_TEAM_MORALE_DROP);
-      setGameState((prev) => ({ ...prev, gameStatus: 'event' }));
-      eventTriggered = true;
-    }
-    if (actionType === 'ADVANCED_DATA_ANALYSIS' && Math.random() < 0.15) {
-      setCurrentEvent(gameEvents.RANDOM_SECONDARY_DATA);
-      setGameState((prev) => ({ ...prev, gameStatus: 'event' }));
-      eventTriggered = true;
-    }
-
-    // --- Post-Action Checks & State Updates ---
-    // Check for potential risk materializing
-    if (gameState.potentialRisk && Math.random() < gameState.potentialRisk.chance) {
-      newReputation += gameState.potentialRisk.reputation;
-      newMessage += '経過観察にしていた問題が悪化し、評判が大きく下がった！';
-      gameState.potentialRisk = null; // Risk materializes only once
-    }
-    // Check for hidden report discovery (e.g., 10% chance each turn)
-    if (gameState.hiddenReport && Math.random() < 0.1) {
-      setGameState({ ...gameState, gameStatus: 'lost', currentMessage: "隠蔽が発覚した！プロジェクトは強制終了だ！" });
-      return;
-    }
-
-    // --- Win/Loss Condition Check ---
-    let newGameStatus = 'ongoing';
-    if (newData >= GAME_CONDITIONS.WIN_DATA_PERCENTAGE) {
-      newGameStatus = 'won';
-      newMessage = 'データ収集率が100%に到達！フェーズ1臨床試験は成功です！';
-    } else if (newMoney < GAME_CONDITIONS.LOSE_MONEY_THRESHOLD) {
-      newGameStatus = 'lost';
-      newMessage = '資産が底をつきました... プロジェクトは失敗です。';
-    } else if (newTurn > GAME_CONDITIONS.MAX_TURNS) {
-      newGameStatus = 'lost';
-      newMessage = '規定ターン数を超えました... プロジェクトは失敗です。';
-    }
-
-    setGameState({
-      ...gameState,
-      money: newMoney,
-      participants: newParticipants,
-      data: Math.min(100, newData),
-      reputation: Math.max(0, Math.min(100, newReputation)),
-      yuaHealth: Math.max(0, Math.min(100, newYuaHealth)),
-      yuaAffection: Math.max(0, newYuaAffection),
-      turn: newTurn,
-      gameStatus: newGameStatus,
-      currentMessage: newMessage,
-      dataCollectionBonus: newBonus, // Set the bonus for the next turn
-    });
-
-    // Trigger event for the *next* turn if the game is still ongoing and no other event was triggered
-    if (newGameStatus === 'ongoing' && !eventTriggered) {
-      triggerEvent(newTurn);
+    if (newState.gameStatus === 'ongoing') {
+      newState.turn++;
+      setGameState(newState);
+      // Trigger event for the *next* turn
+      triggerEvent(newState.turn, newState);
+    } else {
+      setGameState(newState);
     }
   };
 
@@ -235,11 +229,11 @@ function App() {
         <StoryDialog scenes={storyScenes} onComplete={handlePrologueComplete} />
       )}
       <Header
-        drugName="FMA-214"
+        drugName="コードFMA-214"
         turn={gameState.turn}
         onRestart={handleRestart}
         onReturnToTitle={handleReturnToTitle}
-        onSave={handleSave}
+        onSave={() => alert('セーブ機能は現在開発中です。')}
       />
       <main>
         <GameScreen
