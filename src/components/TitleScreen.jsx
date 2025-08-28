@@ -6,7 +6,7 @@ function TitleScreen({ onStartGame }) {
   return (
     <Container
       component="main"
-      maxWidth="sm"
+      maxWidth="md"
       className="title-screen-container"
     >
       <Box
@@ -17,8 +17,16 @@ function TitleScreen({ onStartGame }) {
           alignItems: 'center',
         }}
       >
-        <Typography component="h1" variant="h2" gutterBottom>
+        <img
+          src={`${import.meta.env.BASE_URL}yua-neutral.svg`}
+          alt="Character"
+          className="title-screen-character"
+        />
+        <Typography component="h1" variant="h2" gutterBottom className="title-screen-title">
           治験シミュレーションゲーム
+        </Typography>
+        <Typography variant="h5" gutterBottom className="title-screen-subtitle">
+          A Clinical Trial Adventure
         </Typography>
         <Box sx={{ mt: 4, width: '100%' }}>
           <Button
