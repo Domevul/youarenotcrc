@@ -196,6 +196,12 @@ function GameScreen({
 
       {/* Status Display */}
       <Box sx={{ mb: 3 }}>
+        {/* Message Area */}
+        {gameState.message && (
+          <Alert severity={gameState.message.type} sx={{ mb: 2 }}>
+            {gameState.message.text}
+          </Alert>
+        )}
         <Typography variant="h5" gutterBottom>
           研究サイクル: {gameState.turn} / 12
         </Typography>
@@ -240,13 +246,6 @@ function GameScreen({
           </Grid>
         </Grid>
       </Box>
-
-      {/* Message Area */}
-      {gameState.message && (
-        <Alert severity={gameState.message.type} sx={{ mb: 2 }}>
-          {gameState.message.text}
-        </Alert>
-      )}
 
       {/* Action Buttons */}
       <Box className="action-cards-container">
