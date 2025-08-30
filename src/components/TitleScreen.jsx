@@ -23,7 +23,7 @@ function TitleScreen({ onStartGame }) {
           className="title-screen-character"
         />
         <Typography component="h1" variant="h2" gutterBottom className="title-screen-title">
-          治験シミュレーションゲーム
+          Cure Human
         </Typography>
         <Typography variant="h5" gutterBottom className="title-screen-subtitle">
           A Clinical Trial Adventure

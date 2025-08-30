@@ -6,7 +6,7 @@ function Header({ drugName, turn, onRestart, onReturnToTitle, onSave }) {
   return (
     <header className="app-header">
       <div className="header-title">
-        <h1>{drugName} - 治験シミュレーション</h1>
+        <h1>{drugName} - Cure Human</h1>
         <div className="turn-counter">Turn: {turn}</div>
       </div>
       <SettingsMenu
