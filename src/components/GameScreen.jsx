@@ -268,51 +268,195 @@ function GameScreen({
           <ActionCard
             title="投与"
             icon={<Science />}
-            description="ユアにプロトタイプを投与し、データを収集します。Healthを消費しますが、最も効率的にデータを収集できます。"
+            description="対象にプロトタイプを投与し、データを収集します。Healthを消費しますが、最も効率的にデータを収集できます。"
           >
-            <Button
-              variant="contained"
-              color="warning"
-              startIcon={<Biotech />}
-              onClick={() => onAction('ADMINISTER_STANDARD')}
-              disabled={isActionDisabled}
-            >
-              標準プロトコル投与 ($30,000)
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              startIcon={<Biotech />}
-              onClick={() => onAction('ADMINISTER_HIGH_RISK')}
-              disabled={isActionDisabled}
-            >
-              高リスク・高リターン投与 ($50,000)
-            </Button>
+            {Object.keys(gameState.subjects).length > 1 ? (
+              // Phase 2 Layout
+              <Grid container spacing={2}>
+                {/* Headers */}
+                <Grid item xs={6}>
+                  <Typography align="center" variant="subtitle2">
+                    YUA
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography align="center" variant="subtitle2">
+                    MAI
+                  </Typography>
+                </Grid>
+                {/* Standard Protocol Buttons */}
+                <Grid item xs={6}>
+                  <Button
+                    variant="contained"
+                    color="warning"
+                    onClick={() => onAction('ADMINISTER_STANDARD', 'yua')}
+                    disabled={isActionDisabled}
+                    fullWidth
+                    size="small"
+                  >
+                    標準投与
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    variant="contained"
+                    color="warning"
+                    onClick={() => onAction('ADMINISTER_STANDARD', 'mai')}
+                    disabled={isActionDisabled}
+                    fullWidth
+                    size="small"
+                  >
+                    標準投与
+                  </Button>
+                </Grid>
+                {/* High-Risk Protocol Buttons */}
+                <Grid item xs={6}>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => onAction('ADMINISTER_HIGH_RISK', 'yua')}
+                    disabled={isActionDisabled}
+                    fullWidth
+                    size="small"
+                  >
+                    高リスク投与
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => onAction('ADMINISTER_HIGH_RISK', 'mai')}
+                    disabled={isActionDisabled}
+                    fullWidth
+                    size="small"
+                  >
+                    高リスク投与
+                  </Button>
+                </Grid>
+              </Grid>
+            ) : (
+              // Phase 1 Layout
+              <>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  startIcon={<Biotech />}
+                  onClick={() => onAction('ADMINISTER_STANDARD', 'yua')}
+                  disabled={isActionDisabled}
+                >
+                  標準プロトコル投与 ($30,000)
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  startIcon={<Biotech />}
+                  onClick={() => onAction('ADMINISTER_HIGH_RISK', 'yua')}
+                  disabled={isActionDisabled}
+                >
+                  高リスク・高リターン投与 ($50,000)
+                </Button>
+              </>
+            )}
           </ActionCard>
           {/* ケア */}
           <ActionCard
             title="ケア"
             icon={<Healing />}
-            description="ユアとの関係を築き、心身の状態を安定させます。HealthやAffectionの維持に不可欠です。"
+            description="対象との関係を築き、心身の状態を安定させます。HealthやAffectionの維持に不可欠です。"
           >
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<People />}
-              onClick={() => onAction('TALK_TO_YUA')}
-              disabled={isActionDisabled}
-            >
-              ユアと会話する ($0)
-            </Button>
-            <Button
-              variant="contained"
-              color="success"
-              startIcon={<Healing />}
-              onClick={() => onAction('PROVIDE_PALLIATIVE_CARE')}
-              disabled={isActionDisabled}
-            >
-              緩和ケアを行う ($40,000)
-            </Button>
+            {Object.keys(gameState.subjects).length > 1 ? (
+              // Phase 2 Layout
+              <Grid container spacing={2}>
+                {/* Headers */}
+                <Grid item xs={6}>
+                  <Typography align="center" variant="subtitle2">
+                    YUA
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography align="center" variant="subtitle2">
+                    MAI
+                  </Typography>
+                </Grid>
+                {/* Talk Buttons */}
+                <Grid item xs={6}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<People />}
+                    onClick={() => onAction('TALK_TO_YUA', 'yua')}
+                    disabled={isActionDisabled}
+                    fullWidth
+                    size="small"
+                  >
+                    会話
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<People />}
+                    onClick={() => onAction('TALK_TO_MAI', 'mai')}
+                    disabled={isActionDisabled}
+                    fullWidth
+                    size="small"
+                  >
+                    会話
+                  </Button>
+                </Grid>
+                {/* Palliative Care Buttons */}
+                <Grid item xs={6}>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    startIcon={<Healing />}
+                    onClick={() => onAction('PROVIDE_PALLIATIVE_CARE', 'yua')}
+                    disabled={isActionDisabled}
+                    fullWidth
+                    size="small"
+                  >
+                    緩和ケア
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    startIcon={<Healing />}
+                    onClick={() => onAction('PROVIDE_PALLIATIVE_CARE', 'mai')}
+                    disabled={isActionDisabled}
+                    fullWidth
+                    size="small"
+                  >
+                    緩和ケア
+                  </Button>
+                </Grid>
+              </Grid>
+            ) : (
+              // Phase 1 Layout
+              <>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<People />}
+                  onClick={() => onAction('TALK_TO_YUA', 'yua')}
+                  disabled={isActionDisabled}
+                >
+                  ユアと会話する ($0)
+                </Button>
+                <Button
+                  variant="contained"
+                  color="success"
+                  startIcon={<Healing />}
+                  onClick={() => onAction('PROVIDE_PALLIATIVE_CARE', 'yua')}
+                  disabled={isActionDisabled}
+                >
+                  緩和ケアを行う ($40,000)
+                </Button>
+              </>
+            )}
           </ActionCard>
           {/* 研究 */}
           <ActionCard
