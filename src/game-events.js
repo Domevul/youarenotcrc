@@ -52,7 +52,7 @@ export const gameEvents = {
   // --- ランダムイベントの例 ---
   RANDOM_NIGHTMARE: {
     id: 'E_RANDOM_01',
-    trigger: (state) => state.yuaHealth < 35, // Healthが35未満の時に発生しやすい
+    trigger: (state) => state.subjects.yua.health < 35, // Healthが35未満の時に発生しやすい
     character: 'ユア',
     title: '悪夢',
     description:
@@ -80,7 +80,7 @@ export const gameEvents = {
   },
   RANDOM_MEMORY_FRAGMENT: {
     id: 'E_RANDOM_02',
-    trigger: (state) => state.yuaAffection > 40, // Affectionが高い時に発生
+    trigger: (state) => state.subjects.yua.affection > 40, // Affectionが高い時に発生
     character: 'ユア',
     title: '思い出話',
     description:
@@ -124,32 +124,21 @@ export const gameEvents = {
     ],
   },
 
-  // --- AIクロエの定期報告イベント ---
-  CHLOE_PERFORMANCE_REVIEW: {
-    id: 'E_CHLOE_01',
-    trigger: (state) => state.turn === 3 || state.turn === 7, // ターン3と7で発生
+
+  // --- フェーズ1成功イベント ---
+  PHASE_1_SUCCESS: {
+    id: 'E_PHASE_1_SUCCESS',
     character: 'AIクロエ',
-    title: '業績評価レポート',
+    title: 'フェーズ1成功',
     description:
-      'AIクロエが、スポンサー企業への定期報告書を読み上げる。「主任。現在の進捗は目標を下回っています。投資家は『結果』を求めていることをお忘れなく」',
+      '「おめでとうございます。コードFMAの基礎開発は成功しました。しかし、これは始まりに過ぎません。次のフェーズへ進む準備はできていますか？」',
     choices: [
       {
-        id: 'CC01a',
-        text: 'わかっている。プレッシャーをかけるな',
-        description: '内心の焦りを押し殺し、冷静を装う。',
-        effects: {}, // 効果なし
-      },
-      {
-        id: 'CC01b',
-        text: 'ユアの安全が最優先だ',
-        description: 'クロエに反論する。彼女はただのデータではない。',
-        effects: { affection: 5 },
-      },
-      {
-        id: 'CC01c',
-        text: '……（無言で頷く）',
-        description: 'プレッシャーを黙って受け止める。結果を出すしかない。',
-        effects: { data: 2 }, // 集中によりデータが少し増える
+        id: 'GOTO_PHASE_2',
+        text: 'フェーズ2に進む',
+        description: '新たな挑戦が始まる。',
+        effects: {}, // ここでは状態変更はせず、App.jsxで特別処理する
+
       },
     ],
   },

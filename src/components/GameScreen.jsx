@@ -169,8 +169,6 @@ function GameScreen({
   onAction,
   currentEvent,
   onEventChoice,
-  yuaHealth,
-  yuaAffection,
   activeActionTab,
   initialMoney,
 }) {
@@ -222,10 +220,16 @@ function GameScreen({
             />
           </Grid>
 
-          {/* Yua's Status Area */}
-          <Grid item xs={12} md={4}>
-            <YuaCharacter health={yuaHealth} affection={yuaAffection} />
-          </Grid>
+          {/* Subjects' Status Area */}
+          {Object.values(gameState.subjects).map((subject) => (
+            <Grid item xs={12} md={4} key={subject.name}>
+              <YuaCharacter
+                name={subject.name}
+                health={subject.health}
+                affection={subject.affection}
+              />
+            </Grid>
+          ))}
 
           {/* Data Collection Stat Card */}
           <Grid item xs={12} md={4}>

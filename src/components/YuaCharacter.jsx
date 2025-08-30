@@ -4,10 +4,10 @@ import HealingIcon from '@mui/icons-material/Healing';
 import './YuaCharacter.css';
 
 /**
- * A component to visually represent Yua and her status.
- * @param {{health: number, affection: number}} props
+ * A component to visually represent a subject and their status.
+ * @param {{name: string, health: number, affection: number}} props
  */
-const YuaCharacter = ({ health, affection }) => {
+const YuaCharacter = ({ name, health, affection }) => {
   const getHeartColor = (affectionLevel) => {
     if (affectionLevel >= 50) return '#f06292'; // Bright, warm pink
     if (affectionLevel >= 0) return '#e91e63'; // Standard pink
@@ -38,12 +38,12 @@ const YuaCharacter = ({ health, affection }) => {
 
   return (
     <div className="yua-character-container">
-      <div className="yua-character-name">ユア</div>
+      <div className="yua-character-name">{name}</div>
       <img
         src={imageSrc}
         onError={handleImageError}
         className="yua-character-body"
-        alt="Yua"
+        alt={name}
       />
       <div className="yua-character-status">
         {/* Affection Status */}
