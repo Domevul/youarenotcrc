@@ -33,38 +33,62 @@ const INITIAL_GAME_STATE = {
   researchBonus: 0, // for 'BASIC_RESEARCH' action
 };
 
+// --- Narrative Actions ---
+const getRandomMessage = (messages) => {
+  return messages[Math.floor(Math.random() * messages.length)];
+};
+
 const ACTIONS = {
   ADMINISTER_STANDARD: {
     cost: 30000,
     effect: (bonus) => ({ data: 15 + bonus, health: -10 }),
-    message:
-      '標準プロトコルを投与。データを収集したが、ユアの体調が少し悪化した。',
+    messages: [
+      '標準プロトコルを投与した。ユアはかすかに顔をしかめたが、何も言わなかった。',
+      '淡々と投与は進む。モニターの数値が、研究の進捗と彼女の負担を同時に示している。',
+      '「……はい。」ユアは静かに腕を差し出す。その目には、諦めと、ほんの少しの期待が混じっていた。',
+    ],
   },
   ADMINISTER_HIGH_RISK: {
     cost: 50000,
     effect: (bonus) => ({ data: 30 + bonus, health: -25 }),
-    message:
-      '高リスク投与を敢行。多くのデータを得たが、ユアの体調が大きく悪化した。',
+    messages: [
+      '高リスク投与を敢行した。ユアの呼吸が荒くなるのがわかる。見ていることしかできない。',
+      '「くっ…！」彼女は唇を噛みしめ、痛みに耐えている。これで、本当に正しいのだろうか？',
+      '大きな成果の裏で、彼女の命が削られていく。胸が痛んだ。',
+    ],
   },
   TALK_TO_YUA: {
     cost: 0,
     effect: () => ({ affection: 10 }),
-    message: 'ユアと会話した。彼女は少し心を開いてくれたようだ。',
+    messages: [
+      '他愛もない話をした。ユアは少しだけ、年相応の少女らしい笑顔を見せた。',
+      'ユアと静かな時間を過ごした。言葉は少なくとも、心は少し通じ合った気がする。',
+      '「研究員さんも、大変ですね」不意に、ユアがこちらを気遣う言葉をかけてきた。',
+    ],
   },
   PROVIDE_PALLIATIVE_CARE: {
     cost: 40000,
     effect: () => ({ health: 20, affection: 5 }),
-    message: '緩和ケアを行った。ユアの体調が少し回復し、感謝された。',
+    messages: [
+      '緩和ケアを行った。ユアの苦痛が和らいだようだ。「…ありがとうございます」と小さな声で言った。',
+      '温かいタオルでユアの体を拭く。彼女の表情が、少しだけ穏やかになった。',
+    ],
   },
   BASIC_RESEARCH: {
     cost: 20000,
     effect: () => ({ researchBonus: 3 }),
-    message: '基礎研究を行った。次の投与で得られるデータが増加する。',
+    messages: [
+      '膨大な論文データを解析し、新しい知見を得た。次の投与が少し楽しみになった。',
+      '深夜まで研究室にこもる。これで一歩、核心に近づいたはずだ。',
+    ],
   },
   ANALYZE_SIDE_EFFECTS: {
     cost: 60000,
-    effect: () => ({ sideEffectChanceModifier: -0.15 }), // Reduces chance of side effect events
-    message: '副作用の分析を行った。今後のリスクが少し低下した。',
+    effect: () => ({ sideEffectChanceModifier: -0.15 }),
+    messages: [
+      '過去の投与データを分析し、副作用のパターンを特定した。これでユアの負担を減らせるかもしれない。',
+      'リスクを予測し、対策を立てる。これも主任研究員の重要な仕事だ。',
+    ],
   },
 };
 
@@ -209,7 +233,7 @@ function App() {
 
     const effects = action.effect(newState.researchBonus);
     newState = applyEffects(newState, effects);
-    newState.message = { text: action.message, type: 'info' };
+    newState.message = { text: getRandomMessage(action.messages), type: 'info' };
 
     // Reset one-time bonuses
     newState.researchBonus = effects.researchBonus || 0;

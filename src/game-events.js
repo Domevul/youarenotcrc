@@ -124,6 +124,7 @@ export const gameEvents = {
     ],
   },
 
+
   // --- フェーズ1成功イベント ---
   PHASE_1_SUCCESS: {
     id: 'E_PHASE_1_SUCCESS',
@@ -137,6 +138,7 @@ export const gameEvents = {
         text: 'フェーズ2に進む',
         description: '新たな挑戦が始まる。',
         effects: {}, // ここでは状態変更はせず、App.jsxで特別処理する
+
       },
     ],
   },
