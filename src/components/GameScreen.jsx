@@ -200,43 +200,41 @@ function GameScreen({
           研究サイクル: {gameState.turn} / 12
         </Typography>
         <Grid container spacing={3} alignItems="stretch">
+          {/* Asset Stat Card */}
+          <Grid item xs={12} md={4}>
+            <StatCard
+              icon={<MonetizationOn color="success" />}
+              title="資産"
+              value={formatMoney(gameState.money)}
+              footer={
+                <LinearProgress
+                  variant="determinate"
+                  value={moneyPercent}
+                  color={getMoneyBarColor(moneyPercent)}
+                />
+              }
+            />
+          </Grid>
+
           {/* Yua's Status Area */}
           <Grid item xs={12} md={4}>
             <YuaCharacter health={yuaHealth} affection={yuaAffection} />
           </Grid>
 
-          {/* Main Stats Area */}
-          <Grid item xs={12} md={8}>
-            <Grid container spacing={3}>
-              <Grid item xs={6}>
-                <StatCard
-                  icon={<MonetizationOn color="success" />}
-                  title="資産"
-                  value={formatMoney(gameState.money)}
-                  footer={
-                    <LinearProgress
-                      variant="determinate"
-                      value={moneyPercent}
-                      color={getMoneyBarColor(moneyPercent)}
-                    />
-                  }
+          {/* Data Collection Stat Card */}
+          <Grid item xs={12} md={4}>
+            <StatCard
+              icon={<Biotech color="secondary" />}
+              title="データ収集率"
+              value={`${gameState.data} %`}
+              footer={
+                <LinearProgress
+                  variant="determinate"
+                  value={gameState.data}
+                  color="secondary"
                 />
-              </Grid>
-              <Grid item xs={6}>
-                <StatCard
-                  icon={<Biotech color="secondary" />}
-                  title="データ収集率"
-                  value={`${gameState.data} %`}
-                  footer={
-                    <LinearProgress
-                      variant="determinate"
-                      value={gameState.data}
-                      color="secondary"
-                    />
-                  }
-                />
-              </Grid>
-            </Grid>
+              }
+            />
           </Grid>
         </Grid>
       </Box>
