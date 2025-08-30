@@ -11,9 +11,7 @@ describe('Header', () => {
     render(<Header drugName={drugName} turn={turn} />);
 
     // Check if the drug name is rendered
-    expect(
-      screen.getByText(/TestDrug - 治験シミュレーション/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/TestDrug - Cure Human/i)).toBeInTheDocument();
 
     // Check if the turn counter is rendered
     expect(screen.getByText(/Turn: 5/i)).toBeInTheDocument();

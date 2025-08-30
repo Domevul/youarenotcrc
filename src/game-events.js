@@ -123,4 +123,34 @@ export const gameEvents = {
       },
     ],
   },
+
+  // --- AIクロエの定期報告イベント ---
+  CHLOE_PERFORMANCE_REVIEW: {
+    id: 'E_CHLOE_01',
+    trigger: (state) => state.turn === 3 || state.turn === 7, // ターン3と7で発生
+    character: 'AIクロエ',
+    title: '業績評価レポート',
+    description:
+      'AIクロエが、スポンサー企業への定期報告書を読み上げる。「主任。現在の進捗は目標を下回っています。投資家は『結果』を求めていることをお忘れなく」',
+    choices: [
+      {
+        id: 'CC01a',
+        text: 'わかっている。プレッシャーをかけるな',
+        description: '内心の焦りを押し殺し、冷静を装う。',
+        effects: {}, // 効果なし
+      },
+      {
+        id: 'CC01b',
+        text: 'ユアの安全が最優先だ',
+        description: 'クロエに反論する。彼女はただのデータではない。',
+        effects: { affection: 5 },
+      },
+      {
+        id: 'CC01c',
+        text: '……（無言で頷く）',
+        description: 'プレッシャーを黙って受け止める。結果を出すしかない。',
+        effects: { data: 2 }, // 集中によりデータが少し増える
+      },
+    ],
+  },
 };
