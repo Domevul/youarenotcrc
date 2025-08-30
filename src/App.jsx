@@ -66,12 +66,21 @@ const ACTIONS = {
       '「研究員さんも、大変ですね」不意に、ユアがこちらを気遣う言葉をかけてきた。',
     ],
   },
+  TALK_TO_MAI: {
+    cost: 0,
+    effect: () => ({ affection: 10 }),
+    messages: [
+      'MAIと研究の進捗について話した。彼女は冷静に、しかし的確なフィードバックをくれた。',
+      'MAIは自室の調整を要求した。合理的な提案だったので、すぐに対応した。',
+      '「あなたの判断を信じています」MAIの言葉は、重く、そして心強い。',
+    ],
+  },
   PROVIDE_PALLIATIVE_CARE: {
     cost: 40000,
     effect: () => ({ health: 20, affection: 5 }),
     messages: [
-      '緩和ケアを行った。ユアの苦痛が和らいだようだ。「…ありがとうございます」と小さな声で言った。',
-      '温かいタオルでユアの体を拭く。彼女の表情が、少しだけ穏やかになった。',
+      '緩和ケアを行った。対象の苦痛が和らいだようだ。「…ありがとうございます」と小さな声が聞こえた。',
+      '温かいタオルで体を拭く。緊張していた表情が、少しだけ穏やかになった。',
     ],
   },
   BASIC_RESEARCH: {
@@ -187,8 +196,8 @@ function App() {
           affection: gameState.subjects.yua.affection, // アフェクションは引き継ぐ
           healthMax: 100,
         },
-        subjectB: {
-          name: '被験体B',
+        mai: {
+          name: 'MAI',
           health: 100,
           affection: 0,
           healthMax: 100,
@@ -216,7 +225,7 @@ function App() {
     endTurn(newState);
   };
 
-  const handleAction = (actionType) => {
+  const handleAction = (actionType, subjectId = 'yua') => {
     if (gameState.gameStatus !== 'ongoing' || gameState.stopTurns > 0) return;
 
     const action = ACTIONS[actionType];
@@ -232,7 +241,7 @@ function App() {
     newState.money -= action.cost;
 
     const effects = action.effect(newState.researchBonus);
-    newState = applyEffects(newState, effects);
+    newState = applyEffects(newState, effects, subjectId); // Pass subjectId
     newState.message = { text: getRandomMessage(action.messages), type: 'info' };
 
     // Reset one-time bonuses
