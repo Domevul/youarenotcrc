@@ -52,7 +52,7 @@ export const gameEvents = {
   // --- ランダムイベントの例 ---
   RANDOM_NIGHTMARE: {
     id: 'E_RANDOM_01',
-    trigger: (state) => state.yuaHealth < 35, // Healthが35未満の時に発生しやすい
+    trigger: (state) => state.subjects.yua.health < 35, // Healthが35未満の時に発生しやすい
     character: 'ユア',
     title: '悪夢',
     description:
@@ -80,7 +80,7 @@ export const gameEvents = {
   },
   RANDOM_MEMORY_FRAGMENT: {
     id: 'E_RANDOM_02',
-    trigger: (state) => state.yuaAffection > 40, // Affectionが高い時に発生
+    trigger: (state) => state.subjects.yua.affection > 40, // Affectionが高い時に発生
     character: 'ユア',
     title: '思い出話',
     description:
@@ -120,6 +120,23 @@ export const gameEvents = {
         text: '予備システムに切り替える',
         description: 'コストはかかるが、こちらの方が安全だ。',
         effects: { money: -75000, health: 15 },
+      },
+    ],
+  },
+
+  // --- フェーズ1成功イベント ---
+  PHASE_1_SUCCESS: {
+    id: 'E_PHASE_1_SUCCESS',
+    character: 'AIクロエ',
+    title: 'フェーズ1成功',
+    description:
+      '「おめでとうございます。コードFMAの基礎開発は成功しました。しかし、これは始まりに過ぎません。次のフェーズへ進む準備はできていますか？」',
+    choices: [
+      {
+        id: 'GOTO_PHASE_2',
+        text: 'フェーズ2に進む',
+        description: '新たな挑戦が始まる。',
+        effects: {}, // ここでは状態変更はせず、App.jsxで特別処理する
       },
     ],
   },

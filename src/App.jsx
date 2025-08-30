@@ -19,9 +19,14 @@ const INITIAL_GAME_STATE = {
   money: 500000,
   turn: 1,
   data: 0,
-  yuaHealth: 100,
-  yuaHealthMax: 100,
-  yuaAffection: 0,
+  subjects: {
+    yua: {
+      name: 'ユア',
+      health: 100,
+      healthMax: 100,
+      affection: 0,
+    },
+  },
   gameStatus: 'ongoing', // 'ongoing', 'event', 'won', 'lost'
   message: { text: '研究サイクルを開始します。', type: 'info' },
   stopTurns: 0,
@@ -119,24 +124,64 @@ function App() {
     }
   };
 
-  const applyEffects = (state, effects) => {
+  const applyEffects = (state, effects, subjectId = 'yua') => {
     const newState = { ...state };
+
+    if (subjectId && newState.subjects[subjectId]) {
+      const subject = newState.subjects[subjectId];
+      subject.health = (subject.health || 0) + (effects.health || 0);
+      subject.affection = (subject.affection || 0) + (effects.affection || 0);
+      subject.healthMax = (subject.healthMax || 100) + (effects.healthMax || 0);
+
+      if (
+        effects.potentialRisk &&
+        Math.random() < effects.potentialRisk.chance
+      ) {
+        subject.healthMax += effects.potentialRisk.effect.healthMax;
+      }
+    }
+
     newState.money = (newState.money || 0) + (effects.money || 0);
     newState.data = (newState.data || 0) + (effects.data || 0);
-    newState.yuaHealth = (newState.yuaHealth || 0) + (effects.health || 0);
-    newState.yuaAffection =
-      (newState.yuaAffection || 0) + (effects.affection || 0);
-    newState.yuaHealthMax =
-      (newState.yuaHealthMax || 100) + (effects.healthMax || 0);
     newState.stopTurns = (newState.stopTurns || 0) + (effects.stopTurns || 0);
 
-    if (effects.potentialRisk && Math.random() < effects.potentialRisk.chance) {
-      return applyEffects(newState, effects.potentialRisk.effect);
-    }
     return newState;
   };
 
+  const goToPhase2 = () => {
+    setGamePhase('phase2');
+    const phase2State = {
+      ...INITIAL_GAME_STATE,
+      turn: 1,
+      phase: 2,
+      money: gameState.money, // フェーズ1から資金を引き継ぐ
+      data: 0, // データ収集率はリセット
+      subjects: {
+        yua: {
+          name: 'ユア',
+          health: 100,
+          affection: gameState.subjects.yua.affection, // アフェクションは引き継ぐ
+          healthMax: 100,
+        },
+        subjectB: {
+          name: '被験体B',
+          health: 100,
+          affection: 0,
+          healthMax: 100,
+        },
+      },
+      message: { text: 'フェーズ2が開始されました。', type: 'info' },
+    };
+    setGameState(phase2State);
+    setCurrentEvent(null);
+  };
+
   const handleEventChoice = (choice) => {
+    if (choice.id === 'GOTO_PHASE_2') {
+      goToPhase2();
+      return;
+    }
+
     let newState = applyEffects(gameState, choice.effects);
     newState.gameStatus = 'ongoing';
     newState.message = {
@@ -175,24 +220,33 @@ function App() {
   const endTurn = (state) => {
     let newState = { ...state };
 
-    // Clamp values
-    newState.yuaHealth = Math.max(
-      0,
-      Math.min(newState.yuaHealth, newState.yuaHealthMax)
-    );
+    // Clamp values for all subjects
+    for (const subjectId in newState.subjects) {
+      const subject = newState.subjects[subjectId];
+      subject.health = Math.max(0, Math.min(subject.health, subject.healthMax));
+    }
+
     newState.data = Math.min(100, newState.data);
 
     // Win/Loss Condition Check
-    if (newState.data >= WIN_DATA_PERCENTAGE) {
-      newState.gameStatus = 'won';
-      newState.message = {
-        text: 'データ収集率が100%に到達！コードFMAの基礎開発は成功した！',
-        type: 'success',
-      };
-    } else if (newState.yuaHealth <= 0) {
+    if (newState.data >= WIN_DATA_PERCENTAGE && newState.phase !== 2) {
+      newState.gameStatus = 'event';
+      setCurrentEvent(gameEvents.PHASE_1_SUCCESS);
+      setGameState(newState); //いったんここでstateを更新してモーダル表示
+      return; //後続の処理はモーダル側で行うためreturn
+    }
+
+    // Check if any subject's health is 0 or less
+    const anySubjectLost = Object.values(newState.subjects).some(
+      (s) => s.health <= 0
+    );
+    if (anySubjectLost) {
+      const lostSubject = Object.values(newState.subjects).find(
+        (s) => s.health <= 0
+      );
       newState.gameStatus = 'lost';
       newState.message = {
-        text: 'ユアのバイタルが停止しました... 私たちの研究は、最悪の結末を迎えた。',
+        text: `${lostSubject.name}のバイタルが停止しました... 私たちの研究は、最悪の結末を迎えた。`,
         type: 'error',
       };
     } else if (newState.money < LOSE_MONEY_THRESHOLD) {
@@ -201,7 +255,8 @@ function App() {
         text: '資産が底をつきました... 研究室は閉鎖です。',
         type: 'error',
       };
-    } else if (newState.yuaAffection <= LOSE_AFFECTION_THRESHOLD) {
+    } else if (newState.subjects.yua.affection <= LOSE_AFFECTION_THRESHOLD) {
+      // Affection loss is specific to Yua for now
       newState.gameStatus = 'lost';
       newState.message = {
         text: 'ユアとの信頼関係は完全に崩壊した。彼女はもう協力してくれない。',
@@ -247,8 +302,6 @@ function App() {
           onAction={handleAction}
           currentEvent={currentEvent}
           onEventChoice={handleEventChoice}
-          yuaHealth={gameState.yuaHealth}
-          yuaAffection={gameState.yuaAffection}
           activeActionTab={activeActionTab}
           initialMoney={INITIAL_GAME_STATE.money}
         />

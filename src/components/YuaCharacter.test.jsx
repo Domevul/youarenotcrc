@@ -6,28 +6,38 @@ import YuaCharacter from './YuaCharacter.jsx';
 describe('YuaCharacter', () => {
   // Vite provides `import.meta.env.BASE_URL` which is '/' in test environments
   const base = import.meta.env.BASE_URL;
+  const characterName = 'ユア';
 
   test('renders neutral expression by default (affection: 0)', () => {
-    render(<YuaCharacter health={100} affection={0} />);
-    const imgElement = screen.getByAltText('Yua');
+    render(
+      <YuaCharacter name={characterName} health={100} affection={0} />
+    );
+    const imgElement = screen.getByAltText(characterName);
     expect(imgElement).toHaveAttribute('src', `${base}yua-neutral.svg`);
+    expect(screen.getByText(characterName)).toBeInTheDocument();
   });
 
   test('renders happy expression for high affection (>= 50)', () => {
-    render(<YuaCharacter health={100} affection={50} />);
-    const imgElement = screen.getByAltText('Yua');
+    render(
+      <YuaCharacter name={characterName} health={100} affection={50} />
+    );
+    const imgElement = screen.getByAltText(characterName);
     expect(imgElement).toHaveAttribute('src', `${base}yua-happy.svg`);
   });
 
   test('renders sad expression for negative affection (< 0)', () => {
-    render(<YuaCharacter health={100} affection={-10} />);
-    const imgElement = screen.getByAltText('Yua');
+    render(
+      <YuaCharacter name={characterName} health={100} affection={-10} />
+    );
+    const imgElement = screen.getByAltText(characterName);
     expect(imgElement).toHaveAttribute('src', `${base}yua-sad.svg`);
   });
 
   test('renders placeholder image on image error and it is visible', async () => {
-    render(<YuaCharacter health={100} affection={0} />);
-    const imgElement = screen.getByAltText('Yua');
+    render(
+      <YuaCharacter name={characterName} health={100} affection={0} />
+    );
+    const imgElement = screen.getByAltText(characterName);
 
     // Simulate image loading error
     fireEvent.error(imgElement);
